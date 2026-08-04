@@ -323,16 +323,22 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
   .topbar { backdrop-filter: none; }
   .modal-overlay { backdrop-filter: none; }
   /* Complementa forceMainContentRepaint() (que reacciona DESPUÉS de cada cambio de sección
-     con un scroll de 1px) atacando la causa un paso antes: promover #main-content a su
-     propia capa de composición de GPU, para que cuando un hijo .view pase de display:none a
-     block, el navegador actualice dentro de una capa ya existente en vez de tener que crear
-     una nueva desde cero -- que es el momento donde Android/Chrome deja tiles sin rasterizar
-     en GPUs de gama media/baja. Coincide con que rotar la pantalla "arregle" el problema: la
-     rotación fuerza igual que esto una recomposición completa de capas. Solo en touchscreens,
-     mismo criterio que el fix de backdrop-filter de arriba (en mouse/desktop no se vio nunca
-     este bug). No se saca forceMainContentRepaint(): queda como red de contención si este
-     cambio no alcanza por sí solo en algún dispositivo. */
-  #main-content { transform: translateZ(0); will-change: transform; }
+     con un scroll de 1px) atacando la causa un paso antes: promover a su propia capa de
+     composición de GPU, para que cuando un elemento pase de display:none a block, el
+     navegador actualice dentro de una capa ya existente en vez de tener que crear una nueva
+     desde cero -- que es el momento donde Android/Chrome deja tiles sin rasterizar en GPUs de
+     gama media/baja. Coincide con que rotar la pantalla "arregle" el problema: la rotación
+     fuerza igual que esto una recomposición completa de capas. Solo en touchscreens, mismo
+     criterio que el fix de backdrop-filter de arriba (en mouse/desktop no se vio nunca este
+     bug). No se saca forceMainContentRepaint(): queda como red de contención si este cambio no
+     alcanza por sí solo en algún dispositivo.
+     2026-08-04: promovía solo #main-content, pero un usuario reprodujo el bug (pantalla en
+     blanco sin ningún error de consola, arreglado rotando) en la pantalla de selección de
+     perfil (#profile-gate) -- ANTES de entrar a un perfil, así que #main-content ni siquiera
+     está activo todavía en ese momento. Se amplía la promoción a todo `body` para cubrir
+     cualquier pantalla de la app (profile-gate, modales, main-content), no solo el contenido
+     post-login. */
+  body { transform: translateZ(0); will-change: transform; }
 }
 .view { display: none; }
 .view.active { display: block; }
