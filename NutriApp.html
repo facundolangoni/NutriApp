@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NutriApp</title>
+<title>NutriApp B1.1</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='10' fill='%2312946b'/%3E%3Ctext x='17' y='23' font-family='Arial, sans-serif' font-size='18' font-weight='800' fill='%23fff' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,8 +40,8 @@
   --note-blue:#dff1ff;
   --note-green:#e3f8ea;
   --note-purple:#efe6ff;
-  --shadow-card: 0 1px 2px rgba(20,22,50,.04), 0 6px 20px -8px rgba(20,22,50,.08);
-  --shadow-pop: 0 20px 50px -12px rgba(20,22,50,.28);
+  --shadow-card: 0 1px 3px rgba(20,22,50,.10);
+  --shadow-pop: 0 8px 20px rgba(20,22,50,.18);
   --radius: 16px;
   /* Escala tipográfica: todo texto de la app usa uno de estos 8 pasos (antes había
      decenas de valores con saltos de 0.5px repartidos sin criterio). Piso de 11px
@@ -98,14 +98,14 @@ body.dark-mode{
   --note-blue:#1c2d3a;
   --note-green:#1c3327;
   --note-purple:#2a2340;
-  --shadow-card: 0 1px 2px rgba(0,0,0,.35), 0 6px 20px -8px rgba(0,0,0,.5);
-  --shadow-pop: 0 20px 50px -12px rgba(0,0,0,.65);
+  --shadow-card: 0 1px 3px rgba(0,0,0,.4);
+  --shadow-pop: 0 8px 20px rgba(0,0,0,.5);
 }
 /* @font-face de TwemojiMozilla SACADO TEMPORALMENTE para probar si es la causa del bug en tablet Android (2026-08-01) — backup completo en el scratchpad de la sesión. Restaurar si la prueba no confirma esta causa. */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif, 'TwemojiMozilla';
   background: var(--bg); color: var(--text);
-  height: 100vh; overflow: hidden; font-size: 13px;
+  height: 100vh; height: 100dvh; overflow: hidden; font-size: 13px;
   -webkit-tap-highlight-color: transparent; /* saca el flash gris cuadrado que Android pone
     sobre cualquier elemento tocado -- ya tenemos estados :hover/:active propios, ese flash
     encima de tarjetas/botones redondeados se ve como un glitch más que como feedback. */
@@ -118,15 +118,20 @@ body {
    selector es más específico y gana igual. */
 button, a, select, [onclick] { touch-action: manipulation; }
 h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozilla'; }
-.app { display: flex; height: 100vh; }
+.app { display: flex; height: 100vh; height: 100dvh; }
 
 /* SIDEBAR */
 .sidebar {
   width: 232px; min-width: 232px;
-  background: linear-gradient(190deg, var(--sidebar-1), var(--sidebar-2) 75%);
+  background: var(--sidebar-1);
   display: flex; flex-direction: column; position: relative;
+  /* Red de seguridad: si el sidebar completo (logo+nav+perfil) no entra en la altura real
+     disponible -- p.ej. la barra del navegador/gestos de Android tapando parte de 100vh en un
+     dispositivo real que no reproduce este bug en el emulador -- se puede scrollear el sidebar
+     entero para llegar igual a la tarjeta de perfil de abajo, en vez de que quede tapada sin
+     forma de alcanzarla. En el caso normal (todo entra) no cambia nada visualmente. */
+  overflow-y: auto;
 }
-.sidebar::after{ content:''; position:absolute; inset:0; pointer-events:none; background: radial-gradient(600px 200px at 0% 0%, rgba(255,255,255,.06), transparent 60%); }
 .sidebar-top { padding: 20px 16px 14px; }
 .logo { display: flex; align-items: center; gap: 10px; padding: 4px; border-radius: 10px; cursor: pointer; }
 .logo-icon {
@@ -144,7 +149,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
   font-weight: 600; position:relative;
 }
 .nav-item:hover { color: #fff; background: rgba(255,255,255,0.06); }
-.nav-item.active { color: var(--sidebar-1); background: #ffffff; box-shadow: 0 8px 16px -6px rgba(0,0,0,.35); }
+.nav-item.active { color: var(--sidebar-1); background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
 .nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .nav-icon svg { width: 15px; height: 15px; display: block; }
 .nav-emoji { font-family: 'TwemojiMozilla', sans-serif; font-size: 20px; line-height: 1; display: block; }
@@ -158,7 +163,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .sidebar-bottom { padding: 12px; }
 .user-card { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 12px; cursor: pointer; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); }
 .user-card:hover { background: rgba(255,255,255,0.09); }
-.user-avatar { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg,var(--indigo),#8b7bf5); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink:0; }
+.user-avatar { width: 30px; height: 30px; border-radius: 9px; background: var(--indigo); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink:0; }
 .user-name { font-size: 12px; font-weight: 700; color: #fff; }
 .user-role { font-size: 11px; color: #8890c4; }
 
@@ -219,7 +224,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
     position: fixed; left: 0; top: 0; bottom: 0; z-index: 210;
     transform: translateX(-100%);
     transition: transform .25s cubic-bezier(.175,.885,.32,1.275);
-    box-shadow: 0 0 40px rgba(10,12,25,.35);
+    box-shadow: 0 4px 16px rgba(10,12,25,.3);
   }
   .sidebar.open { transform: translateX(0); }
   .sidebar-backdrop {
@@ -235,7 +240,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
   height: 60px; min-height: 60px; display: flex; align-items: center;
   padding: 0 26px; gap: 14px;
   border-bottom: 1px solid var(--border);
-  background: var(--topbar-bg); backdrop-filter: blur(8px);
+  background: var(--topbar-bg);
 }
 .breadcrumb { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-3); font-weight: 500; }
 .breadcrumb .current { color: var(--text); font-weight: 700; }
@@ -248,7 +253,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 }
 .btn-ghost { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
 .btn-ghost:hover { background: #f7f8fc; color: var(--text); border-color:#dcdfea; }
-.btn-primary { background: var(--brand); color: white; box-shadow: 0 8px 16px -6px rgba(18,148,107,.45); }
+.btn-primary { background: var(--brand); color: white; box-shadow: 0 2px 6px rgba(18,148,107,.35); }
 .btn-primary:hover { background: var(--brand-dark); }
 .btn-sm { padding: 6px 12px; font-size: 12px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
@@ -306,23 +311,19 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
    (toolbar, gestos), y 100vh no descuenta ese espacio — se agrega padding extra abajo para
    que siempre se pueda scrollear más allá del último elemento y verlo completo. */
 @media (max-width: 1024px) {
-  .content { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
+  .content { padding-bottom: calc(220px + env(safe-area-inset-bottom, 0px)); }
 }
-/* backdrop-filter (usado en .topbar y .modal-overlay para el efecto "vidrio esmerilado") es
-   una causa conocida de un bug de renderizado de Chrome en Android: en varios GPUs de gama
-   media/baja, el compositor no rasteriza bien el contenido detrás del blur y quedan franjas en
-   blanco -- exactamente lo que reportó un usuario probando la app en su tablet Android (se
-   corregía momentáneamente al scrollear, y volvía a romperse al cambiar de sección). El scroll
-   forzado en forceMainContentRepaint() (ver navigate()) es un parche que reacciona después del
-   hecho; esto ataca la causa: se saca el blur por completo en touchscreens (celular Y tablet,
-   donde se dan casi todos los reportes de este bug -- en mouse/desktop no genera problemas y
-   se deja como estaba). El fondo de ambos ya es mayormente opaco sin el blur (--topbar-bg y el
-   rgba(15,17,35,.55) del overlay), así que la diferencia visual es mínima: se pierde el ligero
-   efecto esmerilado, no la legibilidad ni el contraste. */
-@media (hover: none) and (pointer: coarse) {
-  .topbar { backdrop-filter: none; }
-  .modal-overlay { backdrop-filter: none; }
+@media (min-width: 1025px) and (hover: none) and (pointer: coarse) {
+  /* Tablets grandes en horizontal pueden superar 1024px de ancho CSS y quedar fuera del
+     breakpoint de arriba, pero siguen siendo pantallas táctiles con el mismo problema de
+     scroll cortado al final -- se detecta por tipo de puntero en vez de por ancho. */
+  .content { padding-bottom: calc(220px + env(safe-area-inset-bottom, 0px)); }
 }
+/* NutriApp Test: backdrop-filter (efecto "vidrio esmerilado") se sacó por completo de
+   .topbar/.modal-overlay para todos los dispositivos, no solo touch -- es de los efectos más
+   caros para el compositor GPU, y era causa conocida de un bug de renderizado en Android gama
+   media/baja (franjas en blanco). El fondo de ambos ya es mayormente opaco sin el blur
+   (--topbar-bg y el rgba(15,17,35,.55) del overlay), así que la diferencia visual es mínima. */
 /* 2026-08-04: había una regla acá promoviendo #main-content y después `body` entero a su
    propia capa de composición de GPU (`transform:translateZ(0); will-change:transform`), en
    base a la teoría de que el bug de franjas en blanco en Android era el compositor sin
@@ -397,7 +398,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .tag.danger { background: var(--red-tint); color: #c53939; border-color: #f6d3d3; }
 
 /* PATIENTS */
-.search-bar { display: flex; gap: 8px; margin-bottom: 14px; }
+.search-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .search-wrap { position: relative; flex: 1; }
 .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
 .search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 10px 14px 10px 36px; color: var(--text); font-size: 13px; outline: none; font-family: inherit; box-shadow: var(--shadow-card); }
@@ -406,7 +407,12 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .chip { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); transition: all .15s; }
 .chip:hover { border-color: var(--brand); color: var(--brand-dark); }
 .chip.active { background: var(--brand); border-color: var(--brand); color: #fff; }
-.food-group-wrap { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.food-group-wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.food-group-inline-wrap { position: relative; display: inline-flex; }
+#food-add-custom-btn { border-color: var(--indigo); color: var(--indigo); }
+.food-info-wrap { position: relative; display: inline-flex; }
+.food-info-popover { position: absolute; top: calc(100% + 8px); right: 0; z-index: 50; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-pop); padding: 14px; width: 320px; max-width: 85vw; font-size: 12px; color: var(--text-3); font-weight: 600; line-height: 1.5; display: none; }
+.food-info-wrap:hover .food-info-popover, .food-info-popover.show { display: block; }
 .food-group-dropdown.filter-chips { position: absolute; top: calc(100% + 8px); left: 0; margin-bottom: 0; z-index: 50; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-pop); padding: 12px; width: 620px; max-width: 85vw; max-height: 260px; overflow-y: auto; display: none; }
 .food-group-dropdown.filter-chips.show { display: flex; }
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-card); }
@@ -442,7 +448,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
 .back-btn { display: flex; align-items: center; gap: 5px; color: var(--text-2); font-size: 12px; font-weight: 700; cursor: pointer; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); transition: all .15s; }
 .back-btn:hover { color: var(--text); background: #f7f8fc; }
-.detail-avatar { width: 54px; height: 54px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; color: white; flex-shrink: 0; box-shadow: 0 10px 18px -8px rgba(20,22,50,.3); }
+.detail-avatar { width: 54px; height: 54px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; color: white; flex-shrink: 0; box-shadow: 0 2px 6px rgba(20,22,50,.25); }
 .detail-name { font-family: 'Manrope', 'TwemojiMozilla'; font-size: 19px; font-weight: 800; color: var(--text); }
 .detail-meta { font-size: 12px; color: var(--text-3); margin-top: 4px; display: flex; gap: 14px; font-weight: 500; }
 .d-meta-edit { color: var(--brand-dark); font-weight: 700; cursor: pointer; }
@@ -519,6 +525,12 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .calc-res-val { font-family: 'Manrope', 'TwemojiMozilla'; font-size: 30px; font-weight: 800; color: var(--brand-dark); }
 .calc-res-unit { font-size: 12px; color: var(--brand); font-weight: 600; }
 .calc-res-cat { font-size: 13px; font-weight: 700; margin-top: 6px; }
+.calc-age-divider { display: flex; align-items: center; gap: 12px; margin: 28px 0 16px; }
+.calc-age-divider::before, .calc-age-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.calc-age-divider .calc-age-label { font-size: 12px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; padding: 5px 14px; border-radius: 100px; }
+.calc-age-divider.kids .calc-age-label { color: var(--blue); background: var(--blue-tint); }
+.calc-age-divider.mayores .calc-age-label { color: var(--amber); background: var(--amber-tint); }
+.calc-age-note { font-size: 11px; color: var(--text-3); line-height: 1.5; margin-top: 10px; font-weight: 500; }
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 .modal.modal-lg { width: 640px; }
@@ -691,7 +703,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .activity-time { font-size: 11px; color: var(--text-3); margin-left: auto; font-weight: 600; }
 
 /* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(15,17,35,0.55); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(15,17,35,0.55); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .modal-overlay.show { opacity: 1; pointer-events: all; }
 .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 26px; width: 500px; max-width: 90vw; transform: scale(.95) translateY(10px); transition: transform .25s cubic-bezier(.175,.885,.32,1.275); box-shadow: var(--shadow-pop); }
 .modal-overlay.show .modal { transform: scale(1) translateY(0); }
@@ -720,8 +732,8 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .profile-card:hover .profile-avatar { border-color: var(--text-2); transform: scale(1.04); }
 .profile-name { font-size: 14px; font-weight: 700; color: var(--text-2); max-width: 116px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .profile-guest-badge { font-size: 11px; font-weight: 800; color: var(--brand-dark); background: var(--brand-tint); padding: 2px 9px; border-radius: 100px; text-transform: uppercase; letter-spacing: .04em; margin-top: -4px; }
-.profile-gate-tutorial-btn { display: block; margin: 44px auto 0; background: none; border: none; color: var(--text-3); font-size: 11px; font-weight: 600; cursor: pointer; padding: 4px 10px; opacity: .7; }
-.profile-gate-tutorial-btn:hover { opacity: 1; text-decoration: underline; }
+.profile-gate-tutorial-btn { display: block; margin: 44px auto 0; background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text-3); font-size: 11px; font-weight: 600; cursor: pointer; padding: 6px 16px; opacity: .8; }
+.profile-gate-tutorial-btn:hover { opacity: 1; border-color: var(--brand); color: var(--text); }
 .profile-card:hover .profile-name { color: var(--text); }
 .profile-card.add .profile-avatar { background: transparent; border: 3px dashed var(--border); color: var(--text-3); font-size: 34px; box-shadow: none; }
 .profile-card.add:hover .profile-avatar { border-color: var(--text-2); color: var(--text); }
@@ -864,7 +876,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
 .pv-goal-title { font-size: 13px; font-weight: 700; }
 .pv-goal-pct { font-size: 12px; font-weight: 800; color: var(--brand-dark); }
 .pv-goal-track { height: 9px; border-radius: 999px; background: var(--brand-tint); overflow: hidden; margin-bottom: 8px; }
-.pv-goal-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand), #22c58e); }
+.pv-goal-fill { height: 100%; border-radius: 999px; background: var(--brand); }
 .pv-goal-caption { font-size: 11.5px; color: var(--text-2); line-height: 1.5; }
 .pv-notes-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .pv-notes-list li { display: flex; gap: 8px; font-size: 12px; line-height: 1.5; }
@@ -1081,29 +1093,20 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
   <div class="profile-gate-inner">
     <div class="profile-gate-logo">
       <svg class="profile-gate-logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="profileGateLogoGrad" x1="14" y1="8" x2="86" y2="92" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="var(--brand)"/>
-            <stop offset="1" stop-color="#22c58e"/>
-          </linearGradient>
-        </defs>
-        <path d="M50 8 86.37 29 86.37 71 50 92 13.63 71 13.63 29Z" stroke="url(#profileGateLogoGrad)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
-        <path d="M24 70 24 30 46 70 46 30 M54 70 65 28 76 70 M60 47 70 47" stroke="url(#profileGateLogoGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M50 8 86.37 29 86.37 71 50 92 13.63 71 13.63 29Z" stroke="var(--brand)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M24 70 24 30 46 70 46 30 M54 70 65 28 76 70 M60 47 70 47" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div class="profile-gate-logo-text">NutriApp</div>
       <div class="profile-gate-logo-sub">Seguimiento Nutricional</div>
     </div>
     <div class="profile-gate-title">¿Quién va a usar la app?</div>
     <div class="profile-grid" id="profile-grid"></div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:4px">
-      <button class="profile-gate-tutorial-btn" onclick="startTutorialFromGate()">Tutorial</button>
-      <button class="profile-gate-tutorial-btn" onclick="triggerImportProfileBackup()" title="Restaurar un perfil desde un archivo de backup (.json)">📥 Importar backup</button>
-    </div>
+    <button class="profile-gate-tutorial-btn" onclick="startTutorialFromGate()">Tutorial</button>
   </div>
 </div>
 
-<!-- Input de archivo oculto y compartido por los dos botones "Importar backup" (Configuración y
-     esta pantalla de selección de perfil) -->
+<!-- Input de archivo oculto para el botón "Importar backup" de Configuración (único lugar
+     desde donde se puede importar ahora; se sacó el mismo botón de la pantalla de perfiles) -->
 <input type="file" id="profile-backup-input" accept="application/json,.json" style="display:none" onchange="importProfileBackup(this.files)">
 
 <!-- MODAL: pedir el PIN de un perfil protegido antes de abrirlo — 3 pasos posibles:
@@ -1237,14 +1240,8 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
     <div class="sidebar-top">
       <div class="logo">
         <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="sidebarLogoGrad" x1="14" y1="8" x2="86" y2="92" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="var(--brand)"/>
-              <stop offset="1" stop-color="#22c58e"/>
-            </linearGradient>
-          </defs>
-          <path d="M50 8 86.37 29 86.37 71 50 92 13.63 71 13.63 29Z" stroke="url(#sidebarLogoGrad)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
-          <path d="M24 70 24 30 46 70 46 30 M54 70 65 28 76 70 M60 47 70 47" stroke="url(#sidebarLogoGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M50 8 86.37 29 86.37 71 50 92 13.63 71 13.63 29Z" stroke="var(--brand)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M24 70 24 30 46 70 46 30 M54 70 65 28 76 70 M60 47 70 47" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div>
           <div class="logo-text">NutriApp</div>
@@ -1402,6 +1399,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
                 <div class="report-menu-title">Generar reporte de...</div>
                 <div class="report-menu-item" onclick="chooseReportSection('overview')">📚 Completo</div>
                 <div class="report-menu-item" onclick="chooseReportSection('resumen')">📋 Resumen</div>
+                <div class="report-menu-item" onclick="chooseReportSection('lifestyle')">🧬 Estilo de vida</div>
                 <div class="report-menu-item" onclick="chooseReportSection('historia')">🏥 Historia Clínica</div>
                 <div class="report-menu-item" onclick="chooseReportSection('evalnut')">🍽️ Evaluación Nutricional</div>
                 <div class="report-menu-item" onclick="chooseReportSection('antro')">📏 Antropometría</div>
@@ -1416,6 +1414,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
         </div>
         <div class="tabs-bar">
           <div class="tab-item active" onclick="switchTab(this,'overview')">📋 Resumen</div>
+          <div class="tab-item" onclick="switchTab(this,'lifestyle')">🧬 Estilo de vida</div>
           <div class="tab-item" onclick="switchTab(this,'historia')">🏥 Historia Clínica</div>
           <div class="tab-item" onclick="switchTab(this,'evalnut')">🍽️ Evaluación Nutricional</div>
           <div class="tab-item" onclick="switchTab(this,'antro')">📏 Antropometría</div>
@@ -1430,7 +1429,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
           <div class="info-card" style="margin-top:16px">
             <div class="rs-card-head">
               <div class="info-card-title" style="margin-bottom:0">📈 Progreso del paciente</div>
-              <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[3],'antro')">Ver antropometría →</span>
+              <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[4],'antro')">Ver antropometría →</span>
             </div>
             <div id="rs-progress-body"></div>
           </div>
@@ -1439,7 +1438,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             <div class="info-card">
               <div class="rs-card-head">
                 <div class="info-card-title" style="margin-bottom:0">📏 Antropometría</div>
-                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[3],'antro')">Ver detalle →</span>
+                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[4],'antro')">Ver detalle →</span>
               </div>
               <div class="info-row"><span class="info-label">Peso actual</span><span class="info-value" id="r-peso">—</span></div>
               <div class="info-row"><span class="info-label">IMC</span><span class="info-value" id="r-imc">—</span></div>
@@ -1451,7 +1450,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             <div class="info-card">
               <div class="rs-card-head">
                 <div class="info-card-title" style="margin-bottom:0">🎯 Objetivos</div>
-                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[4],'objetivos')">Ver detalle →</span>
+                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[5],'objetivos')">Ver detalle →</span>
               </div>
               <div class="info-row" style="flex-direction:column;align-items:flex-start;gap:4px">
                 <span class="info-label">Peso objetivo</span><span class="info-value" id="r-peso-objetivo" style="text-align:left">—</span>
@@ -1469,7 +1468,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             <div class="info-card">
               <div class="rs-card-head">
                 <div class="info-card-title" style="margin-bottom:0">🧪 Resultados Bioquímicos</div>
-                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[5],'files')">Ver todos →</span>
+                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[6],'files')">Ver todos →</span>
               </div>
               <div id="rs-labs-summary"></div>
               <div id="rs-labs-alert"></div>
@@ -1477,14 +1476,14 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             <div class="info-card">
               <div class="rs-card-head">
                 <div class="info-card-title" style="margin-bottom:0">🏥 Historia Clínica</div>
-                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[1],'historia')">Ver todo →</span>
+                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[2],'historia')">Ver todo →</span>
               </div>
               <div id="rs-historia-summary"></div>
             </div>
             <div class="info-card">
               <div class="rs-card-head">
                 <div class="info-card-title" style="margin-bottom:0">🍽️ Evaluación Nutricional</div>
-                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[2],'evalnut')">Ver todo →</span>
+                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[3],'evalnut')">Ver todo →</span>
               </div>
               <div id="rs-evalnut-summary"></div>
               <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="sendRecordatorioToNutrition()">🍎 Trasladar recordatorio a Nutrición</button>
@@ -1492,7 +1491,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             <div class="info-card">
               <div class="rs-card-head">
                 <div class="info-card-title" style="margin-bottom:0">🩺 Diagnóstico</div>
-                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[6],'diagnostico')">Ver detalle →</span>
+                <span class="rs-detail-link" onclick="switchTab(document.querySelectorAll('.tab-item')[7],'diagnostico')">Ver detalle →</span>
               </div>
               <div id="rs-diagnostico-summary"></div>
             </div>
@@ -1500,6 +1499,116 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
         </div>
 
         <!-- Antropometría -->
+        <!-- Estilo de vida -->
+        <div id="tab-lifestyle" style="display:none">
+          <div class="info-card">
+            <div class="info-card-title">🧬 Estilo de vida</div>
+            <div class="calc-desc">Datos del contexto y hábitos de vida del paciente, relevantes para el abordaje nutricional.</div>
+            <div class="form-grid-2">
+              <div class="form-group"><div class="form-label">Ocupación / profesión</div><input class="form-input" id="lf-ocupacion" placeholder="Ej: Docente, empleado administrativo, changas..."></div>
+              <div class="form-group"><div class="form-label">Horario laboral</div>
+                <select class="form-select" id="lf-horario-laboral">
+                  <option value="">Seleccioná</option>
+                  <option value="Horario fijo diurno">Horario fijo diurno</option>
+                  <option value="Turnos rotativos">Turnos rotativos</option>
+                  <option value="Turno nocturno">Turno nocturno</option>
+                  <option value="Horario variable/informal">Horario variable/informal</option>
+                  <option value="No trabaja / jubilado/a">No trabaja / jubilado/a</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Tipo de actividad laboral</div>
+                <select class="form-select" id="lf-tipo-trabajo">
+                  <option value="">Seleccioná</option>
+                  <option value="Sedentaria (oficina/escritorio)">Sedentaria (oficina/escritorio)</option>
+                  <option value="Movimiento moderado (de pie, caminata)">Movimiento moderado (de pie, caminata)</option>
+                  <option value="Físicamente demandante">Físicamente demandante</option>
+                  <option value="No trabaja / jubilado/a">No trabaja / jubilado/a</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Dificultades educativas</div>
+                <select class="form-select" id="lf-dificultades-educativas">
+                  <option value="">Seleccioná</option>
+                  <option value="Ninguna">Ninguna</option>
+                  <option value="Dificultades de lectoescritura">Dificultades de lectoescritura</option>
+                  <option value="Requiere explicaciones simplificadas">Requiere explicaciones simplificadas</option>
+                  <option value="Bajo nivel de escolarización">Bajo nivel de escolarización</option>
+                  <option value="Otra">Otra</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Nivel de actividad física</div>
+                <select class="form-select" id="lf-activity">
+                  <option value="Sin datos">Sin datos</option>
+                  <option value="Sedentaria">Sedentaria</option>
+                  <option value="Ligera (1-2 veces por semana)">Ligera (1-2 veces por semana)</option>
+                  <option value="Moderada (3-4 veces por semana)">Moderada (3-4 veces por semana)</option>
+                  <option value="Alta (5+ veces por semana / entrenamiento intenso)">Alta (5+ veces por semana / entrenamiento intenso)</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Convivencia</div>
+                <select class="form-select" id="lf-convivencia">
+                  <option value="">Seleccioná</option>
+                  <option value="Solo/a">Solo/a</option>
+                  <option value="En pareja">En pareja</option>
+                  <option value="Con familia">Con familia</option>
+                  <option value="Con compañeros/as">Con compañeros/as</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Quién hace las compras</div>
+                <select class="form-select" id="lf-quien-compra">
+                  <option value="">Seleccioná</option>
+                  <option value="Uno/a mismo/a">Uno/a mismo/a</option>
+                  <option value="Familiar">Un familiar</option>
+                  <option value="Entre todos/as en el hogar">Entre todos/as en el hogar</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Situación económica / acceso a alimentos</div>
+                <select class="form-select" id="lf-situacion-economica">
+                  <option value="">Seleccioná</option>
+                  <option value="Sin dificultades para acceder a los alimentos">Sin dificultades para acceder a los alimentos</option>
+                  <option value="Dificultades ocasionales">Dificultades ocasionales</option>
+                  <option value="Dificultades frecuentes / inseguridad alimentaria">Dificultades frecuentes / inseguridad alimentaria</option>
+                  <option value="Prefiere no responder">Prefiere no responder</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Horas de sueño promedio</div><input class="form-input" id="lf-sueno-horas" type="number" step="0.5" min="0" placeholder="Ej: 7"></div>
+              <div class="form-group"><div class="form-label">Calidad del sueño</div>
+                <select class="form-select" id="lf-sueno-calidad">
+                  <option value="">Seleccioná</option>
+                  <option value="Buena">Buena</option>
+                  <option value="Regular">Regular</option>
+                  <option value="Mala">Mala</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Tabaquismo</div>
+                <select class="form-select" id="lf-tabaquismo">
+                  <option value="">Seleccioná</option>
+                  <option value="No fuma">No fuma</option>
+                  <option value="Ex-fumador/a">Ex-fumador/a</option>
+                  <option value="Fuma ocasionalmente">Fuma ocasionalmente</option>
+                  <option value="Fuma habitualmente">Fuma habitualmente</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Nivel de estrés percibido</div>
+                <select class="form-select" id="lf-estres">
+                  <option value="">Seleccioná</option>
+                  <option value="Bajo">Bajo</option>
+                  <option value="Moderado">Moderado</option>
+                  <option value="Alto">Alto</option>
+                </select>
+              </div>
+              <div class="form-group"><div class="form-label">Horas sentado/a o frente a pantallas por día</div><input class="form-input" id="lf-pantallas" type="number" step="0.5" min="0" placeholder="Ej: 8"></div>
+            </div>
+            <div class="form-group"><div class="form-label">Detalle de actividad física</div><input class="form-input" id="lf-activity-detalle" placeholder="Ej: camina 30 min 3 veces por semana, gimnasio, fútbol los sábados..."></div>
+            <div class="form-group"><div class="form-label">Uso de apps de fitness/seguimiento</div><input class="form-input" id="lf-apps" placeholder="Ej: contador de pasos, MyFitnessPal, reloj inteligente..."></div>
+            <div class="form-group" style="margin-bottom:0"><div class="form-label">Observaciones de estilo de vida</div><input class="form-input" id="lf-observaciones" placeholder="Otros datos relevantes del contexto de vida del paciente..."></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-primary btn-sm" onclick="saveLifestyle()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios</button>
+          </div>
+        </div>
+
         <!-- Historia Clínica -->
         <div id="tab-historia" style="display:none">
           <div class="info-card">
@@ -1541,6 +1650,15 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
                 <button class="btn btn-ghost btn-sm" onclick="addMedicacionFromGlossary()">+ Agregar del glosario</button>
               </div>
               <div id="d-meds-desc" class="meds-desc-list"></div>
+            </div>
+
+            <div class="info-row" style="flex-direction:column;align-items:flex-start;gap:6px;margin-top:16px">
+              <span class="info-label">Antecedentes Patológicos</span>
+              <div id="d-antecedentes" class="tag-list"></div>
+              <div class="hc-add-row">
+                <input class="form-input" id="hc-antecedente-input" placeholder="Agregar antecedente (ej: Apendicectomía 2019)" onkeydown="if(event.key==='Enter'){event.preventDefault();addAntecedentePatologico();}">
+                <button class="btn btn-primary btn-sm" onclick="addAntecedentePatologico()">+ Agregar</button>
+              </div>
             </div>
 
             <div class="info-row" style="flex-direction:column;align-items:flex-start;gap:6px;margin-top:16px">
@@ -1866,6 +1984,117 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             </div>
           </div>
 
+          <div class="calc-age-divider kids"><span class="calc-age-label">🧒 Niños</span></div>
+          <div class="calc-grid">
+            <div class="calc-card">
+              <div class="calc-title">🎯 Peso Teórico</div>
+              <div class="calc-desc">Estimación rápida de peso para la edad — para evaluar el crecimiento real, usá siempre <span style="cursor:pointer;color:var(--brand);font-weight:700;text-decoration:underline" onclick="goToPatientTab('historia')">Curvas adjuntadas</span></div>
+              <div class="calc-label">Edad (meses)</div>
+              <input class="calc-input" id="obj-pin-edad" type="number" min="0" placeholder="Ej: 30 (2 años y medio)" oninput="calcObjPesoTeoricoNino()">
+              <div class="calc-result" id="obj-pin-r">
+                <div class="calc-res-val" id="obj-pin-v">—</div>
+                <div class="calc-res-unit">kg — peso teórico estimado</div>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="useIdealWeightNinoAsGoal()">Usar como peso objetivo</button>
+            </div>
+            <div class="calc-card">
+              <div class="calc-title">🔥 Requerimiento Calórico</div>
+              <div class="calc-desc">Gasto energético basal (Schofield, peso) × nivel de actividad</div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="obj-cain-p" type="number" min="0" placeholder="18" oninput="calcObjCalNino()"></div>
+                <div><div class="calc-label">Edad (años)</div><input class="calc-input" id="obj-cain-e" type="number" min="0" max="18" step="0.5" placeholder="5" oninput="calcObjCalNino()"></div>
+              </div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Sexo</div><select class="calc-select" id="obj-cain-s" onchange="calcObjCalNino()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+                <div><div class="calc-label">Actividad</div>
+                  <select class="calc-select" id="obj-cain-a" onchange="calcObjCalNino()">
+                    <option value="">Seleccioná</option>
+                    <option value="1.2">Poco activo</option>
+                    <option value="1.4">Activo</option>
+                    <option value="1.6">Muy activo</option>
+                  </select>
+                </div>
+              </div>
+              <div class="calc-result" id="obj-cain-r">
+                <div class="calc-res-val" id="obj-cain-v">—</div>
+                <div class="calc-res-unit">kcal / día</div>
+              </div>
+              <div class="calc-age-note">Ecuación de Schofield (peso) por franja etaria — válida de 0 a 18 años. No usar Harris-Benedict en pacientes pediátricos.</div>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="useCalNinoAsObjetivo()">Usar como objetivo calórico</button>
+            </div>
+            <div class="calc-card">
+              <div class="calc-title">⚡ Gasto Energético Basal</div>
+              <div class="calc-desc">Ecuación de Schofield (peso) — específica para pediatría</div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="obj-gebn-p" type="number" min="0" placeholder="18" oninput="calcObjGebNino()"></div>
+                <div><div class="calc-label">Edad (años)</div><input class="calc-input" id="obj-gebn-e" type="number" min="0" max="18" step="0.5" placeholder="5" oninput="calcObjGebNino()"></div>
+              </div>
+              <div><div class="calc-label">Sexo</div><select class="calc-select" id="obj-gebn-s" onchange="calcObjGebNino()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+              <div class="calc-result" id="obj-gebn-r">
+                <div class="calc-res-val" id="obj-gebn-v">—</div>
+                <div class="calc-res-unit">kcal / día en reposo</div>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="useGebNinoAsObjetivo()">Usar como objetivo</button>
+            </div>
+          </div>
+
+          <div class="calc-age-divider mayores"><span class="calc-age-label">🧓 Adultos mayores</span></div>
+          <div class="calc-grid">
+            <div class="calc-card">
+              <div class="calc-title">🎯 Peso Saludable</div>
+              <div class="calc-desc">Rango de IMC 22–27 recomendado en personas mayores — más protector que el rango adulto estándar</div>
+              <div class="calc-label">Altura (cm)</div>
+              <input class="calc-input" id="obj-pim-h" type="number" min="0" placeholder="165" oninput="calcObjPesoSaludableMayor()">
+              <div class="calc-result" id="obj-pim-r">
+                <div class="calc-res-val" id="obj-pim-v">—</div>
+                <div class="calc-res-unit">kg — rango saludable estimado</div>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="useIdealWeightMayorAsGoal()">Usar como peso objetivo</button>
+            </div>
+            <div class="calc-card">
+              <div class="calc-title">🔥 Requerimiento Calórico</div>
+              <div class="calc-desc">Ecuación de Mifflin-St Jeor — más precisa que Harris-Benedict en personas mayores</div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="obj-caim-p" type="number" min="0" placeholder="70" oninput="calcObjCalMayor()"></div>
+                <div><div class="calc-label">Altura (cm)</div><input class="calc-input" id="obj-caim-h" type="number" min="0" placeholder="165" oninput="calcObjCalMayor()"></div>
+              </div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Edad</div><input class="calc-input" id="obj-caim-e" type="number" min="60" placeholder="70" oninput="calcObjCalMayor()"></div>
+                <div><div class="calc-label">Sexo</div><select class="calc-select" id="obj-caim-s" onchange="calcObjCalMayor()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+              </div>
+              <div class="calc-label">Nivel de actividad</div>
+              <select class="calc-select" id="obj-caim-a" onchange="calcObjCalMayor()">
+                <option value="">Seleccioná</option>
+                <option value="1.2">Sedentario</option>
+                <option value="1.375">Ligero (1–3 días/sem)</option>
+                <option value="1.55">Moderado (3–5 días/sem)</option>
+                <option value="1.725">Intenso (6–7 días/sem)</option>
+              </select>
+              <div class="calc-result" id="obj-caim-r">
+                <div class="calc-res-val" id="obj-caim-v">—</div>
+                <div class="calc-res-unit">kcal / día (TDEE)</div>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="useCalMayorAsObjetivo()">Usar como objetivo calórico</button>
+            </div>
+            <div class="calc-card">
+              <div class="calc-title">⚡ Gasto Energético Basal</div>
+              <div class="calc-desc">Ecuación de Mifflin-St Jeor (GEB/TMB en reposo)</div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="obj-gebm-p" type="number" min="0" placeholder="70" oninput="calcObjGebMayor()"></div>
+                <div><div class="calc-label">Altura (cm)</div><input class="calc-input" id="obj-gebm-h" type="number" min="0" placeholder="165" oninput="calcObjGebMayor()"></div>
+              </div>
+              <div class="form-grid-2">
+                <div><div class="calc-label">Edad</div><input class="calc-input" id="obj-gebm-e" type="number" min="60" placeholder="70" oninput="calcObjGebMayor()"></div>
+                <div><div class="calc-label">Sexo</div><select class="calc-select" id="obj-gebm-s" onchange="calcObjGebMayor()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+              </div>
+              <div class="calc-result" id="obj-gebm-r">
+                <div class="calc-res-val" id="obj-gebm-v">—</div>
+                <div class="calc-res-unit">kcal / día en reposo</div>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="useGebMayorAsObjetivo()">Usar como objetivo</button>
+            </div>
+          </div>
+
           <div class="info-card" style="margin-top:16px">
             <div class="info-card-title">🎯 Objetivos del paciente</div>
             <div class="form-grid-2">
@@ -2087,6 +2316,186 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
             </div>
             <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="applyGrasaCorporal()">Aplicar a paciente</button>
           </div>
+          <div class="calc-card">
+            <div class="calc-title">🥩 Requerimiento Proteico</div>
+            <div class="calc-desc">Gramos de proteína por día según peso y nivel de actividad</div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="prot-p" type="number" min="0" placeholder="70" oninput="calcProteico()"></div>
+              <div><div class="calc-label">Nivel</div>
+                <select class="calc-select" id="prot-n" onchange="calcProteico()">
+                  <option value="">Seleccioná</option>
+                  <option value="0.8">Sedentario / mantenimiento (0,8 g/kg)</option>
+                  <option value="1.0">Adulto mayor (1 g/kg)</option>
+                  <option value="1.2">Actividad moderada (1,2 g/kg)</option>
+                  <option value="1.6">Actividad intensa / fuerza (1,6 g/kg)</option>
+                  <option value="2.0">Recuperación / hipercatabólico (2 g/kg)</option>
+                </select>
+              </div>
+            </div>
+            <div class="calc-result" id="prot-r">
+              <div class="calc-res-val" id="prot-v">—</div>
+              <div class="calc-res-unit">g de proteína / día</div>
+            </div>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">🌾 Requerimiento Fíbrico</div>
+            <div class="calc-desc">Ingesta adecuada de fibra según edad y sexo (Institute of Medicine)</div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Edad</div><input class="calc-input" id="fib-e" type="number" min="0" placeholder="30" oninput="calcFibrico()"></div>
+              <div><div class="calc-label">Sexo</div><select class="calc-select" id="fib-s" onchange="calcFibrico()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+            </div>
+            <div class="calc-result" id="fib-r">
+              <div class="calc-res-val" id="fib-v">—</div>
+              <div class="calc-res-unit">g de fibra / día</div>
+            </div>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">💧 Requerimiento Hídrico</div>
+            <div class="calc-desc">Método de Holliday-Segar</div>
+            <div class="calc-label">Peso (kg)</div>
+            <input class="calc-input" id="agua-p" type="number" min="0" placeholder="70" oninput="calcHidrico()">
+            <div class="calc-result" id="agua-r">
+              <div class="calc-res-val" id="agua-v">—</div>
+              <div class="calc-res-unit">ml de agua / día</div>
+              <div class="calc-res-cat" id="agua-l">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-age-divider kids"><span class="calc-age-label">🧒 Niños</span></div>
+        <div class="calc-grid">
+          <div class="calc-card">
+            <div class="calc-title">🎯 Peso Teórico</div>
+            <div class="calc-desc">Estimación rápida de peso para la edad — para evaluar el crecimiento real, usá siempre <span style="cursor:pointer;color:var(--brand);font-weight:700;text-decoration:underline" onclick="navigate('curvas')">Curvas</span></div>
+            <div class="calc-label">Edad (meses)</div>
+            <input class="calc-input" id="pin-edad" type="number" min="0" placeholder="Ej: 30 (2 años y medio)" oninput="calcPesoTeoricoNino()">
+            <div class="calc-result" id="pin-r">
+              <div class="calc-res-val" id="pin-v">—</div>
+              <div class="calc-res-unit">kg — peso teórico estimado</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="applyPesoTeoricoNino()">Aplicar a paciente</button>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">🔥 Requerimiento Calórico</div>
+            <div class="calc-desc">Gasto energético basal (Schofield, peso) × nivel de actividad</div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="cain-p" type="number" min="0" placeholder="18" oninput="calcCalNino()"></div>
+              <div><div class="calc-label">Edad (años)</div><input class="calc-input" id="cain-e" type="number" min="0" max="18" step="0.5" placeholder="5" oninput="calcCalNino()"></div>
+            </div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Sexo</div><select class="calc-select" id="cain-s" onchange="calcCalNino()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+              <div><div class="calc-label">Actividad</div>
+                <select class="calc-select" id="cain-a" onchange="calcCalNino()">
+                  <option value="">Seleccioná</option>
+                  <option value="1.2">Poco activo</option>
+                  <option value="1.4">Activo</option>
+                  <option value="1.6">Muy activo</option>
+                </select>
+              </div>
+            </div>
+            <div class="calc-result" id="cain-r">
+              <div class="calc-res-val" id="cain-v">—</div>
+              <div class="calc-res-unit">kcal / día</div>
+            </div>
+            <div class="calc-age-note">Ecuación de Schofield (peso) por franja etaria — válida de 0 a 18 años. No usar Harris-Benedict en pacientes pediátricos.</div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="applyCalNino()">Aplicar a paciente</button>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">⚡ Gasto Energético Basal</div>
+            <div class="calc-desc">Ecuación de Schofield (peso) — específica para pediatría</div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="gebn-p" type="number" min="0" placeholder="18" oninput="calcGebNino()"></div>
+              <div><div class="calc-label">Edad (años)</div><input class="calc-input" id="gebn-e" type="number" min="0" max="18" step="0.5" placeholder="5" oninput="calcGebNino()"></div>
+            </div>
+            <div><div class="calc-label">Sexo</div><select class="calc-select" id="gebn-s" onchange="calcGebNino()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+            <div class="calc-result" id="gebn-r">
+              <div class="calc-res-val" id="gebn-v">—</div>
+              <div class="calc-res-unit">kcal / día en reposo</div>
+            </div>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">⚖️ IMC</div>
+            <div class="calc-desc">En niños, el IMC se interpreta por percentil según edad y sexo — no con puntos de corte fijos</div>
+            <div class="calc-label">Peso (kg)</div>
+            <input class="calc-input" id="imcn-p" type="number" min="0" placeholder="18" oninput="calcImcNino()">
+            <div class="calc-label">Altura (cm)</div>
+            <input class="calc-input" id="imcn-h" type="number" min="0" placeholder="105" oninput="calcImcNino()">
+            <div class="calc-result" id="imcn-r">
+              <div class="calc-res-val" id="imcn-v">—</div>
+              <div class="calc-res-unit">kg/m² — valor sin clasificar</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="navigate('curvas')">Ir a Curvas (IMC/Edad) →</button>
+          </div>
+        </div>
+
+        <div class="calc-age-divider mayores"><span class="calc-age-label">🧓 Adultos mayores</span></div>
+        <div class="calc-grid">
+          <div class="calc-card">
+            <div class="calc-title">🎯 Peso Saludable</div>
+            <div class="calc-desc">Rango de IMC 22–27 recomendado en personas mayores — más protector que el rango adulto estándar</div>
+            <div class="calc-label">Altura (cm)</div>
+            <input class="calc-input" id="pim-h" type="number" min="0" placeholder="165" oninput="calcPesoSaludableMayor()">
+            <div class="calc-result" id="pim-r">
+              <div class="calc-res-val" id="pim-v">—</div>
+              <div class="calc-res-unit">kg — rango saludable estimado</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="applyPesoSaludableMayor()">Aplicar a paciente</button>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">🔥 Requerimiento Calórico</div>
+            <div class="calc-desc">Ecuación de Mifflin-St Jeor — más precisa que Harris-Benedict en personas mayores</div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="caim-p" type="number" min="0" placeholder="70" oninput="calcCalMayor()"></div>
+              <div><div class="calc-label">Altura (cm)</div><input class="calc-input" id="caim-h" type="number" min="0" placeholder="165" oninput="calcCalMayor()"></div>
+            </div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Edad</div><input class="calc-input" id="caim-e" type="number" min="60" placeholder="70" oninput="calcCalMayor()"></div>
+              <div><div class="calc-label">Sexo</div><select class="calc-select" id="caim-s" onchange="calcCalMayor()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+            </div>
+            <div class="calc-label">Nivel de actividad</div>
+            <select class="calc-select" id="caim-a" onchange="calcCalMayor()">
+              <option value="">Seleccioná</option>
+              <option value="1.2">Sedentario</option>
+              <option value="1.375">Ligero (1–3 días/sem)</option>
+              <option value="1.55">Moderado (3–5 días/sem)</option>
+              <option value="1.725">Intenso (6–7 días/sem)</option>
+            </select>
+            <div class="calc-result" id="caim-r">
+              <div class="calc-res-val" id="caim-v">—</div>
+              <div class="calc-res-unit">kcal / día (TDEE)</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="applyCalMayor()">Aplicar a paciente</button>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">⚡ Gasto Energético Basal</div>
+            <div class="calc-desc">Ecuación de Mifflin-St Jeor (GEB/TMB en reposo)</div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Peso (kg)</div><input class="calc-input" id="gebm-p" type="number" min="0" placeholder="70" oninput="calcGebMayor()"></div>
+              <div><div class="calc-label">Altura (cm)</div><input class="calc-input" id="gebm-h" type="number" min="0" placeholder="165" oninput="calcGebMayor()"></div>
+            </div>
+            <div class="form-grid-2">
+              <div><div class="calc-label">Edad</div><input class="calc-input" id="gebm-e" type="number" min="60" placeholder="70" oninput="calcGebMayor()"></div>
+              <div><div class="calc-label">Sexo</div><select class="calc-select" id="gebm-s" onchange="calcGebMayor()"><option value="">Seleccioná</option><option value="m">Masculino</option><option value="f">Femenino</option></select></div>
+            </div>
+            <div class="calc-result" id="gebm-r">
+              <div class="calc-res-val" id="gebm-v">—</div>
+              <div class="calc-res-unit">kcal / día en reposo</div>
+            </div>
+          </div>
+          <div class="calc-card">
+            <div class="calc-title">⚖️ IMC</div>
+            <div class="calc-desc">Puntos de corte ajustados para personas de 65 años o más</div>
+            <div class="calc-label">Peso (kg)</div>
+            <input class="calc-input" id="imcm-p" type="number" min="0" placeholder="70" oninput="calcImcMayor()">
+            <div class="calc-label">Altura (cm)</div>
+            <input class="calc-input" id="imcm-h" type="number" min="0" placeholder="165" oninput="calcImcMayor()">
+            <div class="calc-result" id="imcm-r">
+              <div class="calc-res-val" id="imcm-v">—</div>
+              <div class="calc-res-unit">kg/m²</div>
+              <div class="calc-res-cat" id="imcm-c">—</div>
+              <div class="metric-bar" style="margin-top:10px"><div class="metric-fill" id="imcm-b" style="width:0%"></div></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2270,11 +2679,6 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
       <div class="view" id="view-nutrition">
         <div class="page-header"><div><div class="page-title">Nutrición</div><div class="page-sub">Calculadora de alimentos y nutrientes</div></div></div>
 
-        <div class="info-card" style="margin-bottom:16px, 'TwemojiMozilla';padding:12px 18px;display:flex;gap:10px;align-items:center">
-          <span style="font-size:19px">🧪</span>
-          <div style="font-size:12px;color:var(--text-3);font-weight:600">Base de datos: <b style="color:var(--text-2)">USDA SR Legacy</b> (valores reales por 100 g). Por defecto se muestran los alimentos protectores y de consumo habitual en Argentina; el catálogo completo (~5.800 alimentos) se activa con el link de abajo, o aparece un alimento puntual si buscás su nombre completo exacto.</div>
-        </div>
-
         <div class="rg-2col" style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
           <div>
             <div class="search-bar">
@@ -2282,48 +2686,59 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
                 <span class="search-icon">🔍</span>
                 <input class="search-input" id="food-search" placeholder="Buscar alimento..." oninput="renderFoodCatalog()">
               </div>
-              <button class="btn btn-ghost btn-sm" style="white-space:nowrap" onclick="openFoodPhotoModal()">📷 Agregar por foto <span class="dev-badge">🚧 En desarrollo</span></button>
+              <div class="food-info-wrap" id="food-info-wrap" style="margin-left:auto">
+                <button class="chip" id="food-info-btn" style="font-family:inherit;white-space:nowrap" onclick="toggleFoodInfoPopover(event)">🧪 Base de datos</button>
+                <div class="food-info-popover" id="food-info-popover">
+                  Base de datos: <b style="color:var(--text-2)">USDA SR Legacy</b> (valores reales por 100 g). Por defecto se muestran los alimentos protectores y de consumo habitual en Argentina; el catálogo completo (~5.800 alimentos) se activa con el link de abajo, o aparece un alimento puntual si buscás su nombre completo exacto.
+                </div>
+              </div>
             </div>
             <div id="food-scope-toggle" style="font-size:12px;color:var(--text-3);margin-bottom:12px"></div>
             <div class="filter-chips" id="food-filter-chips">
               <div class="chip active" data-cat="todos" onclick="setFoodFilter(this,'todos')">Todos</div>
+              <div class="food-group-inline-wrap" id="food-group-inline-wrap">
+                <div class="chip" id="food-group-trigger" onclick="toggleFoodGroupMenu(event)">🗂️ Todas las categorías ▾</div>
+                <div class="filter-chips food-group-dropdown" id="food-group-chips">
+                  <div class="chip active" data-cat="todos" onclick="setFoodGroup(this,'todos')">Todas las categorías</div>
+                  <div class="chip" data-cat="verduras" onclick="setFoodGroup(this,'verduras')">🥦 Verduras</div>
+                  <div class="chip" data-cat="frutas" onclick="setFoodGroup(this,'frutas')">🍎 Frutas</div>
+                  <div class="chip" data-cat="legumbres" onclick="setFoodGroup(this,'legumbres')">🫘 Legumbres</div>
+                  <div class="chip" data-cat="cereales" onclick="setFoodGroup(this,'cereales')">🌾 Cereales y harinas</div>
+                  <div class="chip" data-cat="carnes_rojas" onclick="setFoodGroup(this,'carnes_rojas')">🥩 Carnes rojas</div>
+                  <div class="chip" data-cat="aves" onclick="setFoodGroup(this,'aves')">🍗 Aves</div>
+                  <div class="chip" data-cat="pescados" onclick="setFoodGroup(this,'pescados')">🐟 Pescados y mariscos</div>
+                  <div class="chip" data-cat="lacteos" onclick="setFoodGroup(this,'lacteos')">🥛 Lácteos y huevos</div>
+                  <div class="chip" data-cat="frutos_secos" onclick="setFoodGroup(this,'frutos_secos')">🥜 Frutos secos y semillas</div>
+                  <div class="chip" data-cat="grasas" onclick="setFoodGroup(this,'grasas')">🫒 Grasas y aceites</div>
+                  <div class="chip" data-cat="dulces" onclick="setFoodGroup(this,'dulces')">🍬 Dulces y snacks</div>
+                  <div class="chip" data-cat="bebidas" onclick="setFoodGroup(this,'bebidas')">🥤 Bebidas</div>
+                  <div class="chip" data-cat="embutidos" onclick="setFoodGroup(this,'embutidos')">🌭 Embutidos y fiambres</div>
+                  <div class="chip" data-cat="sopas" onclick="setFoodGroup(this,'sopas')">🍲 Sopas y salsas</div>
+                  <div class="chip" data-cat="bebe" onclick="setFoodGroup(this,'bebe')">🍼 Alimentos para bebé</div>
+                  <div class="chip" data-cat="especias" onclick="setFoodGroup(this,'especias')">🌿 Especias y hierbas</div>
+                  <div class="chip" data-cat="preparados" onclick="setFoodGroup(this,'preparados')">🍽️ Comidas preparadas</div>
+                </div>
+              </div>
               <div class="chip" data-cat="carb" onclick="setFoodFilter(this,'carb')">🍞 Carbohidratos</div>
               <div class="chip" data-cat="prot" onclick="setFoodFilter(this,'prot')">💪 Proteínas</div>
               <div class="chip" data-cat="gras" onclick="setFoodFilter(this,'gras')">🥑 Grasas</div>
               <div class="chip" data-cat="vitaminas" onclick="setFoodFilter(this,'vitaminas')">🍊 Vitaminas y minerales</div>
               <div class="chip" data-cat="favoritos" onclick="setFoodFilter(this,'favoritos')">⭐ Favoritos</div>
-              <div class="chip" data-cat="recetas" onclick="setFoodFilter(this,'recetas')">🍳 Recetas</div>
+              <button class="chip" id="food-scope-btn" style="font-family:inherit" onclick="toggleFoodCatalogScope()">🔍 Ver todos los alimentos</button>
             </div>
             <div class="food-group-wrap" id="food-group-wrap">
-              <div class="chip" id="food-group-trigger" onclick="toggleFoodGroupMenu(event)">🗂️ Todas las categorías ▾</div>
-            <div class="filter-chips food-group-dropdown" id="food-group-chips">
-              <div class="chip active" data-cat="todos" onclick="setFoodGroup(this,'todos')">Todas las categorías</div>
-              <div class="chip" data-cat="verduras" onclick="setFoodGroup(this,'verduras')">🥦 Verduras</div>
-              <div class="chip" data-cat="frutas" onclick="setFoodGroup(this,'frutas')">🍎 Frutas</div>
-              <div class="chip" data-cat="legumbres" onclick="setFoodGroup(this,'legumbres')">🫘 Legumbres</div>
-              <div class="chip" data-cat="cereales" onclick="setFoodGroup(this,'cereales')">🌾 Cereales y harinas</div>
-              <div class="chip" data-cat="carnes_rojas" onclick="setFoodGroup(this,'carnes_rojas')">🥩 Carnes rojas</div>
-              <div class="chip" data-cat="aves" onclick="setFoodGroup(this,'aves')">🍗 Aves</div>
-              <div class="chip" data-cat="pescados" onclick="setFoodGroup(this,'pescados')">🐟 Pescados y mariscos</div>
-              <div class="chip" data-cat="lacteos" onclick="setFoodGroup(this,'lacteos')">🥛 Lácteos y huevos</div>
-              <div class="chip" data-cat="frutos_secos" onclick="setFoodGroup(this,'frutos_secos')">🥜 Frutos secos y semillas</div>
-              <div class="chip" data-cat="grasas" onclick="setFoodGroup(this,'grasas')">🫒 Grasas y aceites</div>
-              <div class="chip" data-cat="dulces" onclick="setFoodGroup(this,'dulces')">🍬 Dulces y snacks</div>
-              <div class="chip" data-cat="bebidas" onclick="setFoodGroup(this,'bebidas')">🥤 Bebidas</div>
-              <div class="chip" data-cat="embutidos" onclick="setFoodGroup(this,'embutidos')">🌭 Embutidos y fiambres</div>
-              <div class="chip" data-cat="sopas" onclick="setFoodGroup(this,'sopas')">🍲 Sopas y salsas</div>
-              <div class="chip" data-cat="bebe" onclick="setFoodGroup(this,'bebe')">🍼 Alimentos para bebé</div>
-              <div class="chip" data-cat="especias" onclick="setFoodGroup(this,'especias')">🌿 Especias y hierbas</div>
-              <div class="chip" data-cat="preparados" onclick="setFoodGroup(this,'preparados')">🍽️ Comidas preparadas</div>
-            </div>
-              <button class="chip" id="food-scope-btn" style="font-family:inherit" onclick="toggleFoodCatalogScope()">🔍 Ver todos los alimentos</button>
+              <button class="chip" id="food-add-custom-btn" style="font-family:inherit" onclick="openCustomFoodModal()">➕ Agregar alimento personalizado</button>
+              <button class="chip" id="food-recetas-btn" style="font-family:inherit" onclick="setFoodFilter(null,'recetas')">🍳 Recetas guardadas<span class="nav-badge" id="food-recetas-count" style="display:none;margin-left:6px">0</span></button>
             </div>
             <div class="food-grid" id="food-catalog-grid"></div>
           </div>
 
           <div>
             <div class="info-card" style="margin-bottom:12px">
-              <div class="info-card-title">🍽️ Mi plato</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px">
+                <div class="info-card-title" style="margin-bottom:0">🍽️ Mi plato</div>
+                <button class="btn btn-ghost btn-sm" onclick="openPlatoReport()" title="Generar un reporte del plato actual">📄 Generar reporte</button>
+              </div>
               <div id="plato-list"></div>
               <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="clearPlato()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> Vaciar plato</button>
               <button class="btn btn-primary btn-sm" style="width:100%;margin-top:8px" onclick="saveCurrentPlateAsRecipe()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar plato</button>
@@ -2642,7 +3057,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
           <div class="info-card">
             <div class="info-card-title">💬 Envianos tu comentario</div>
             <div style="font-size:12px;color:var(--text-3);font-weight:600;line-height:1.5;margin-bottom:16px">
-              La app todavía está en pulido. Si encontraste algo que no funciona bien, algo confuso, o se te ocurre algo que le vendría bien, contanos — se abre tu programa de correo con el mensaje listo para mandar.
+              La app todavía está en pulido. Si encontraste algo que no funciona bien, algo confuso, o se te ocurre algo que le vendría bien, contanos — te lo mandamos directo, no hace falta que abras tu correo.
             </div>
             <div class="form-group" style="margin-bottom:12px"><div class="form-label">Tu nombre (opcional)</div><input class="form-input" id="fb-nombre" placeholder="Ej: María Pérez"></div>
             <div class="form-group" style="margin-bottom:12px"><div class="form-label">¿Cómo la estás probando?</div>
@@ -2852,6 +3267,36 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
   </div>
 </div>
 
+<!-- MODAL: ALIMENTO PERSONALIZADO — carga manual rápida (nombre + los 4 macros) para un
+     alimento que no está en el catálogo, sin necesidad de foto/OCR. Se guarda en
+     currentProfile.data.customFoods igual que "Agregar por foto" (ver saveCustomFoodFromPhoto
+     más arriba) y además queda marcado como favorito automáticamente (ver saveCustomFood). -->
+<div class="modal-overlay" id="modal-custom-food" onclick="if(event.target===this)closeCustomFoodModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Agregar alimento personalizado</div>
+      <div class="modal-close" onclick="closeCustomFoodModal()">×</div>
+    </div>
+    <div class="modal-scroll-body">
+      <div class="form-group"><div class="form-label">Nombre del alimento</div><input class="form-input" id="cf-nombre"></div>
+      <div class="form-group"><div class="form-label">Kcal (por 100 g)</div><input class="form-input" id="cf-kcal" type="number" step="1" min="0" placeholder="Dejalo vacío para calcularlas solas"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><div class="form-label">Proteínas (g /100 g)</div><input class="form-input" id="cf-prot" type="number" step="0.1" min="0"></div>
+        <div class="form-group"><div class="form-label">Carbohidratos (g /100 g)</div><input class="form-input" id="cf-carb" type="number" step="0.1" min="0"></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><div class="form-label">Grasas (g /100 g)</div><input class="form-input" id="cf-gras" type="number" step="0.1" min="0"></div>
+        <div class="form-group"><div class="form-label">Fibra (g /100 g)</div><input class="form-input" id="cf-fibra" type="number" step="0.1" min="0"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-3);font-weight:600">Los valores son por 100 g. Si dejás las calorías vacías, se calculan solas a partir de proteínas, carbohidratos y grasas.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCustomFoodModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveCustomFood()">Guardar alimento</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: FECHA DUPLICADA — aparece si ya hay otra consulta cargada el mismo día que la
      que se está por guardar (dos pesos distintos el mismo día generan un lazo/rulo en el
      gráfico de Progreso del paciente). Se recomienda reemplazar, pero se puede mantener
@@ -2903,17 +3348,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
           </select>
         </div>
       </div>
-      <div class="form-group"><div class="form-label">Motivo de consulta</div><input class="form-input" id="pd-reason" placeholder="Pérdida de peso, control de diabetes..."></div>
-      <div class="form-group" style="margin-bottom:16px">
-        <div class="form-label">Actividad física</div>
-        <select class="form-select" id="pd-activity">
-          <option value="Sin datos">Sin datos</option>
-          <option value="Sedentaria">Sedentaria</option>
-          <option value="Ligera (1-2 veces por semana)">Ligera (1-2 veces por semana)</option>
-          <option value="Moderada (3-4 veces por semana)">Moderada (3-4 veces por semana)</option>
-          <option value="Alta (5+ veces por semana / entrenamiento intenso)">Alta (5+ veces por semana / entrenamiento intenso)</option>
-        </select>
-      </div>
+      <div class="form-group" style="margin-bottom:16px"><div class="form-label">Motivo de consulta</div><input class="form-input" id="pd-reason" placeholder="Pérdida de peso, control de diabetes..."></div>
       <button class="btn btn-primary btn-sm" onclick="savePersonalData()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar datos personales</button>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0 14px">
@@ -3131,7 +3566,7 @@ h1,h2,h3,.brand-font { font-family: 'Manrope','Inter',sans-serif, 'TwemojiMozill
   <div class="modal modal-lg">
     <div class="modal-header">
       <div>
-        <div class="modal-title">Reporte de recetas</div>
+        <div class="modal-title" id="receta-report-modal-title">Reporte de recetas</div>
         <div class="rb-toolbar-sub" id="receta-report-toolbar-sub">Vista de solo lectura</div>
       </div>
       <div class="modal-close" onclick="closeRecetaReportModal()">×</div>
@@ -3710,8 +4145,8 @@ const GUEST_PATIENTS = [
     name:'Valentina Ruiz', age:29, sex:'F', weight:68, height:163, tipo:'adulto', status:'activo',
     phone:'+54 11 4000-0001', email:'valentina.ejemplo@mail.com', birth:'10/05/1996',
     reason:'Bajar de peso y mejorar hábitos', goals:'Bajar 6kg en 4 meses', activity:'Moderada',
-    patologias:['Sobrepeso'], alergias:[], medicacion:[], aspectos:[],
-    avatar:'VR', color:'linear-gradient(135deg,#6366f1,#8b5cf6)',
+    patologias:['Sobrepeso'], alergias:[], medicacion:[], antecedentesPatologicos:[], aspectos:[],
+    avatar:'VR', color:'#6366f1',
     ai:'',
     history:[
       {date:'Jun 2026',title:'Segunda consulta (ejemplo)',desc:'Bajó 1kg. Buena adherencia al plan.',dot:'#34d399',weight:68,height:163},
@@ -3723,8 +4158,8 @@ const GUEST_PATIENTS = [
     name:'Tomás Ibáñez', age:8, sex:'M', weight:27, height:128, tipo:'nino', status:'activo',
     phone:'+54 11 4000-0002', email:'tomas.ejemplo@mail.com', birth:'22/02/2018',
     reason:'Control nutricional pediátrico', goals:'Crecimiento adecuado y hábitos saludables', activity:'Alta (deporte)',
-    patologias:[], alergias:['Maní'], medicacion:[], aspectos:[],
-    avatar:'TI', color:'linear-gradient(135deg,#10b981,#059669)',
+    patologias:[], alergias:['Maní'], medicacion:[], antecedentesPatologicos:[], aspectos:[],
+    avatar:'TI', color:'#10b981',
     ai:'',
     history:[{date:'Jun 2026',title:'Control trimestral (ejemplo)',desc:'Talla y peso en percentil 50.',dot:'#34d399',weight:27,height:128}],
     files:[], labs:[], kcalObjetivo:null, formulaSintetica:'', planHistory:[]
@@ -4021,7 +4456,7 @@ let favoriteFoods = new Set(); // ids de FUNCTIONAL_FOODS marcados con la ⭐ �
 let recetasCurrentFolder = null; // null = mostrando la grilla de carpetas de Recetas
 let pendingRecipeSave = null; // { nombre, items } mientras está abierto el modal "¿en qué carpeta guardamos la receta?"
 let pendingRecipeMove = null; // { recipeId } mientras el mismo modal está abierto en modo "mover / duplicar"
-let recetaReportFolderLabel = ''; // nombre de la carpeta del reporte de recetas abierto, usado para el nombre del archivo
+let reportSheetFilename = ''; // nombre base (sin extensión) para el PDF/imagen del reporte abierto en #modal-receta-report -- lo setea cada función "opener" (recetas de carpeta, plato actual)
 const UNFILED_RECETA_FOLDER = '__sin_carpeta_receta__';
 // Carpetas fijas de Recetas (siempre presentes, no se pueden borrar ni renombrar), más las que
 // el usuario cree a mano — esas viven en currentProfile.data.recetaFolders, ver getRecetaFolders().
@@ -4111,7 +4546,7 @@ const SECTION_TOURS = {
       { selector: '.detail-header', title: 'La ficha de un paciente', text: 'Al abrir un paciente (este es un ejemplo) ves sus datos principales: nombre, edad, sexo, contacto y estado — y desde acá generás su reporte o cargás una consulta nueva.', before: () => openPatient(0) },
       { selector: '#rs-progress-body', title: 'Progreso del paciente', text: 'La evolución de peso y medidas se grafica sola a medida que cargás consultas.', before: () => openPatient(0) },
       { selector: '#view-detail .detail-grid', title: 'Todo de un vistazo', text: 'Antropometría, objetivos, resultados bioquímicos, historia clínica y evaluación nutricional — resumidos acá, con acceso directo al detalle de cada uno.', before: () => openPatient(0) },
-      { selector: '.tabs-bar', title: 'El resto de la ficha', text: 'Historia Clínica, Evaluación Nutricional, Antropometría, Objetivos, Resultados Bioquímicos y Diagnóstico: cada uno tiene su propia solapa con el detalle completo.', before: () => openPatient(0) },
+      { selector: '.tabs-bar', title: 'El resto de la ficha', text: 'Estilo de vida, Historia Clínica, Evaluación Nutricional, Antropometría, Objetivos, Resultados Bioquímicos y Diagnóstico: cada uno tiene su propia solapa con el detalle completo.', before: () => openPatient(0) },
     ],
   },
   nutrition: {
@@ -4506,6 +4941,10 @@ function setFoodFilter(el, cat) {
   document.querySelectorAll('#food-filter-chips .chip').forEach(c => c.classList.remove('active'));
   const targetEl = document.querySelector('#food-filter-chips [data-cat="' + cat + '"]');
   if (targetEl) targetEl.classList.add('active');
+  // "Recetas guardadas" vive fuera de #food-filter-chips (ver food-group-wrap), así que su
+  // estado activo/inactivo se sincroniza acá aparte en vez de con el querySelector de arriba.
+  const recetasBtn = document.getElementById('food-recetas-btn');
+  if (recetasBtn) recetasBtn.classList.toggle('active', cat === 'recetas');
   activeFoodFilter = cat;
   if (cat === 'recetas') recetasCurrentFolder = null; // siempre arranca en la grilla de carpetas
   foodRenderLimit = FOOD_PAGE_SIZE;
@@ -4538,10 +4977,27 @@ function toggleFoodGroupMenu(e) {
   if (opening) setTimeout(() => document.addEventListener('click', closeFoodGroupMenuOnClickOutside), 0);
 }
 function closeFoodGroupMenuOnClickOutside(e) {
-  const wrap = document.getElementById('food-group-wrap');
+  const wrap = document.getElementById('food-group-inline-wrap');
   if (wrap && !wrap.contains(e.target)) {
     document.getElementById('food-group-chips').classList.remove('show');
     document.removeEventListener('click', closeFoodGroupMenuOnClickOutside);
+  }
+}
+
+// El popover de "Base de datos" ya se abre solo con hover (CSS ::hover), pero en touch no hay
+// hover real -- este toggle por click es lo que lo hace funcionar en celular/tablet también.
+function toggleFoodInfoPopover(e) {
+  if (e) e.stopPropagation();
+  const pop = document.getElementById('food-info-popover');
+  const opening = !pop.classList.contains('show');
+  pop.classList.toggle('show', opening);
+  if (opening) setTimeout(() => document.addEventListener('click', closeFoodInfoPopoverOnClickOutside), 0);
+}
+function closeFoodInfoPopoverOnClickOutside(e) {
+  const wrap = document.getElementById('food-info-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('food-info-popover').classList.remove('show');
+    document.removeEventListener('click', closeFoodInfoPopoverOnClickOutside);
   }
 }
 
@@ -4560,9 +5016,21 @@ function loadMoreFoods() {
   renderFoodCatalog(true);
 }
 
+// Número de recetas guardadas (todas las carpetas) mostrado en el "globo" del botón
+// "Recetas guardadas" -- se llama siempre que se re-renderiza el catálogo, así se actualiza
+// solo después de guardar/borrar una receta sin necesitar un hook aparte en cada lugar.
+function updateRecetasBadge() {
+  const badge = document.getElementById('food-recetas-count');
+  if (!badge) return;
+  const count = currentProfile ? (currentProfile.data.recetas || []).length : 0;
+  badge.textContent = count;
+  badge.style.display = count ? '' : 'none';
+}
+
 function renderFoodCatalog(keepLimit) {
   const grid = document.getElementById('food-catalog-grid');
   if (!grid) return;
+  updateRecetasBadge();
   if (activeFoodFilter === 'recetas') {
     if (!recetasCurrentFolder) renderRecetaFolderGrid(grid); else renderRecetaFolderRecipes(grid);
     return;
@@ -4581,8 +5049,16 @@ function renderFoodCatalog(keepLimit) {
   if (activeFoodGroup !== 'todos') items = items.filter(f => f.grupo === activeFoodGroup);
   if (activeFoodFilter === 'favoritos') items = items.filter(f => favoriteFoods.has(f.id));
   const meta = FOOD_FILTER_META[activeFoodFilter];
-  if (meta) items = items.slice().sort((a, b) => b[meta.field] - a[meta.field]);
-  else items = items.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  const baseCompare = meta
+    ? (a, b) => b[meta.field] - a[meta.field]
+    : (a, b) => a.nombre.localeCompare(b.nombre, 'es');
+  // Los alimentos personalizados (custom:true) van siempre primero en la lista, sin importar
+  // el criterio de orden que esté activo -- entre ellos, el más recién agregado va primero.
+  items = items.slice().sort((a, b) => {
+    if (!!a.custom !== !!b.custom) return a.custom ? -1 : 1;
+    if (a.custom && b.custom) return (b.createdAt || 0) - (a.createdAt || 0);
+    return baseCompare(a, b);
+  });
 
   const scopeToggle = document.getElementById('food-scope-toggle');
   if (scopeToggle) {
@@ -4781,6 +5257,7 @@ function saveCustomFoodFromPhoto() {
     grupo: document.getElementById('fp-grupo').value,
     comun: true,
     custom: true,
+    createdAt: Date.now(),
     tags: [],
     beneficio: 'Alimento cargado manualmente a partir de una foto de su etiqueta.',
     micro: {},
@@ -4791,6 +5268,51 @@ function saveCustomFoodFromPhoto() {
   closeFoodPhotoModal();
   renderFoodCatalog();
   showToast('Alimento agregado al catálogo', '✅');
+}
+
+function openCustomFoodModal() {
+  ['cf-nombre', 'cf-kcal', 'cf-prot', 'cf-carb', 'cf-gras', 'cf-fibra'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('modal-custom-food').classList.add('show');
+}
+function closeCustomFoodModal() { document.getElementById('modal-custom-food').classList.remove('show'); }
+
+function saveCustomFood() {
+  if (!currentProfile) return;
+  const nombre = document.getElementById('cf-nombre').value.trim();
+  if (!nombre) { showToast('Completá el nombre del alimento', '⚠️'); return; }
+  const prot = parseFloat(document.getElementById('cf-prot').value) || 0;
+  const carb = parseFloat(document.getElementById('cf-carb').value) || 0;
+  const gras = parseFloat(document.getElementById('cf-gras').value) || 0;
+  const fibra = parseFloat(document.getElementById('cf-fibra').value) || 0;
+  // Si el profesional carga las kcal a mano, se respeta tal cual (ej. un producto envasado
+  // con calorías impresas en la etiqueta que no cierran exacto con Atwater). Si la deja vacía,
+  // se calculan solas con los factores estándar (4/4/9) a partir de los 3 macros calóricos --
+  // la fibra no suma acá, es informativa (mismo criterio que las etiquetas nutricionales, que
+  // separan "Carbohidratos" de "de los cuales fibra").
+  const kcalInput = document.getElementById('cf-kcal').value.trim();
+  const kcal = kcalInput !== '' ? (parseFloat(kcalInput) || 0) : Math.round(prot * 4 + carb * 4 + gras * 9);
+  const food = {
+    id: newId('customfood'),
+    nombre,
+    emoji: '📝',
+    porcion: 100,
+    kcal,
+    prot, carb, gras, fibra,
+    vitaminas: 0,
+    grupo: 'preparados',
+    comun: true,
+    custom: true,
+    createdAt: Date.now(),
+    tags: [],
+    beneficio: 'Alimento cargado manualmente por el profesional.',
+    micro: {},
+  };
+  customFoods.push(food);
+  currentProfile.data.customFoods = customFoods;
+  saveProfiles();
+  closeCustomFoodModal();
+  toggleFavorite(food.id); // ya guarda y re-renderiza el catálogo
+  showToast('Alimento agregado a tu catálogo y a Favoritos', '✅');
 }
 
 function deleteCustomFood(id) {
@@ -5189,7 +5711,8 @@ function openRecetaFolderReport() {
   const recetas = (currentProfile.data.recetas || [])
     .filter(r => isUnfiled ? (!r.folderId || !knownIds.has(r.folderId)) : includedFolderIds.has(r.folderId));
   if (!recetas.length) { showToast('Esta carpeta todavía no tiene recetas para incluir en el reporte', '⚠️'); return; }
-  recetaReportFolderLabel = folderLabel;
+  reportSheetFilename = `Recetas - ${folderLabel}`;
+  document.getElementById('receta-report-modal-title').textContent = 'Reporte de recetas';
   renderRecetaFolderReportSheet(folderLabel, recetas);
   document.getElementById('modal-receta-report').classList.add('show');
   const recetaSub = document.getElementById('receta-report-toolbar-sub');
@@ -5284,6 +5807,60 @@ function closeRecetaReportModal() {
   document.getElementById('modal-receta-report').classList.remove('show');
 }
 
+// Reutiliza el mismo modal/hoja/exportadores que el reporte de carpetas de Recetas
+// (#modal-receta-report, exportRecetaReportPDF/Image), pero para el "Mi plato" armado en el
+// momento -- no es una receta guardada, así que arma su propia hoja en vez de simular un
+// array de una sola "receta" (eso hubiese repetido los totales dos veces: por sección y en
+// el total general).
+function openPlatoReport() {
+  if (!platoActual.length) { showToast('Agregá alimentos al plato antes de generar un reporte', '⚠️'); return; }
+  reportSheetFilename = 'Mi plato';
+  document.getElementById('receta-report-modal-title').textContent = 'Reporte de mi plato';
+  renderPlatoReportSheet();
+  document.getElementById('modal-receta-report').classList.add('show');
+  const recetaSub = document.getElementById('receta-report-toolbar-sub');
+  recetaSub.dataset.prefix = 'Vista de solo lectura';
+  recetaSub.dataset.suffix = 'lista para imprimir o exportar';
+  updateSheetPageBadge('receta-report-sheet', 'receta-report-toolbar-sub');
+  fitReportSheetPreview('receta-report-sheet', 'receta-report-scalebox');
+}
+
+function renderPlatoReportSheet() {
+  const today = new Date();
+  const fecha = `${today.getDate()} de ${MESES_LARGOS[today.getMonth()].toLowerCase()} de ${today.getFullYear()}`;
+  const cfg = (currentProfile && currentProfile.data.configuracion) || {};
+  const clinicaSub = cfg.clinica ? escapeHtml(cfg.clinica) : 'Sistema de gestión nutricional';
+  const totals = computeItemsTotals(platoActual);
+  const ingredientes = platoActual.map(i => {
+    const food = findFood(i.foodId);
+    return food ? `<div class="rs-ingredient-row"><span>${food.emoji} ${escapeHtml(food.nombre)}</span><span>${i.gramos} g</span></div>` : '';
+  }).join('');
+
+  document.getElementById('receta-report-sheet').innerHTML = `
+    <div class="rs-header">
+      <div class="rs-brand">
+        <div class="rs-brand-icon">N</div>
+        <div><div class="rs-brand-name">NutriApp</div><div class="rs-brand-sub">${clinicaSub}</div></div>
+      </div>
+      <div class="rs-doc-title"><div class="t1">Mi plato</div><div class="t2">${fecha}</div></div>
+    </div>
+    <div class="rs-section">
+      <div class="rs-section-title">🍽️ Alimentos</div>
+      <div class="rs-ingredient-list">${ingredientes}</div>
+    </div>
+    <div class="rs-section">
+      <div class="rs-section-title">📊 Totales</div>
+      <div class="rs-metric-row">
+        <div class="rs-metric"><div class="rs-metric-val">${Math.round(totals.kcal)}</div><div class="rs-metric-unit">kcal</div><div class="rs-metric-label">Energía</div></div>
+        <div class="rs-metric"><div class="rs-metric-val">${totals.prot.toFixed(1)}</div><div class="rs-metric-unit">g</div><div class="rs-metric-label">Proteínas</div></div>
+        <div class="rs-metric"><div class="rs-metric-val">${totals.carb.toFixed(1)}</div><div class="rs-metric-unit">g</div><div class="rs-metric-label">Carbohidratos</div></div>
+        <div class="rs-metric"><div class="rs-metric-val">${totals.gras.toFixed(1)}</div><div class="rs-metric-unit">g</div><div class="rs-metric-label">Grasas</div></div>
+        <div class="rs-metric"><div class="rs-metric-val">${totals.fibra.toFixed(1)}</div><div class="rs-metric-unit">g</div><div class="rs-metric-label">Fibra</div></div>
+      </div>
+    </div>
+  `;
+}
+
 function exportRecetaReportPDF() {
   if (typeof html2canvas === 'undefined' || !window.jspdf) { showToast('No se pudo cargar el generador de PDF', '⚠️'); return; }
   const { jsPDF } = window.jspdf;
@@ -5311,7 +5888,7 @@ function exportRecetaReportPDF() {
       pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
       heightLeft -= pageH;
     }
-    pdf.save(`Recetas - ${recetaReportFolderLabel || 'Carpeta'}.pdf`);
+    pdf.save(`${reportSheetFilename || 'Reporte'}.pdf`);
     showToast('PDF descargado', '✅');
   }).catch(() => { el.style.transform = prevTransform; showToast('No se pudo generar el PDF', '⚠️'); });
 }
@@ -5325,7 +5902,7 @@ function exportRecetaReportImage() {
   html2canvas(el, { scale: 3, backgroundColor: '#ffffff', useCORS: true }).then(canvas => {
     el.style.transform = prevTransform;
     const link = document.createElement('a');
-    link.download = `Recetas - ${recetaReportFolderLabel || 'Carpeta'}.jpg`;
+    link.download = `${reportSheetFilename || 'Reporte'}.jpg`;
     link.href = canvas.toDataURL('image/jpeg', 0.95);
     link.click();
     showToast('Imagen descargada', '✅');
@@ -5518,9 +6095,14 @@ function toggleFavorite(foodId) {
 function addFoodToPlate(foodId) {
   const food = findFood(foodId);
   if (!food) return;
+  // Cantidad fija de 100g para el botón "+ Agregar" del catálogo, sin importar la porción
+  // sugerida del alimento (food.porcion) -- otros caminos que ya traen una cantidad propia
+  // (cargar una receta, el recordatorio de 24hs cuando sí menciona una cantidad) no pasan
+  // por acá y no se ven afectados.
+  const gramos = 100;
   const existing = platoActual.find(p => p.foodId === foodId);
-  if (existing) existing.gramos += food.porcion;
-  else platoActual.push({ foodId, gramos: food.porcion });
+  if (existing) existing.gramos += gramos;
+  else platoActual.push({ foodId, gramos });
   renderPlate();
 }
 
@@ -5571,7 +6153,7 @@ function renderPlate() {
             <div class="plate-row-sub" id="plate-row-sub-${idx}">${kcalItem} kcal</div>
           </div>
           ${item.estimated ? `<span class="plate-est-badge" id="plate-est-badge-${idx}" title="Cantidad estimada automáticamente a partir del recordatorio de 24 horas — se recomienda confirmarla o completarla a mano.">≈</span>` : ''}
-          <input class="plate-qty-input" type="number" min="0" value="${item.gramos}" oninput="updatePlateGramos(${idx}, this.value)">
+          <input class="plate-qty-input" type="number" min="0" step="10" value="${item.gramos}" oninput="updatePlateGramos(${idx}, this.value)">
           <span style="font-size:11px;color:var(--text-3);font-weight:600">g</span>
           <span class="plate-remove" onclick="removeFromPlate(${idx})">✕</span>
         </div>
@@ -5973,6 +6555,37 @@ function renderObjetivosForm(p) {
   document.getElementById('obj-fib-k').value = p.kcalObjetivo || '';
   calcObjFib();
 
+  // Misma idea para las calculadoras pediátricas y de adultos mayores agregadas después:
+  // se precargan con los datos actuales del paciente, siguen siendo editables.
+  const ageMonths = getPatientAgeMonths(p);
+  const ageYears = getPatientAge(p);
+  const sexLower = p.sex ? p.sex.toLowerCase() : '';
+
+  document.getElementById('obj-pin-edad').value = ageMonths || '';
+  calcObjPesoTeoricoNino();
+  document.getElementById('obj-cain-p').value = p.weight || '';
+  document.getElementById('obj-cain-e').value = ageYears || '';
+  document.getElementById('obj-cain-s').value = sexLower;
+  calcObjCalNino();
+  document.getElementById('obj-gebn-p').value = p.weight || '';
+  document.getElementById('obj-gebn-e').value = ageYears || '';
+  document.getElementById('obj-gebn-s').value = sexLower;
+  calcObjGebNino();
+
+  document.getElementById('obj-pim-h').value = p.height || '';
+  calcObjPesoSaludableMayor();
+  document.getElementById('obj-caim-p').value = p.weight || '';
+  document.getElementById('obj-caim-h').value = p.height || '';
+  document.getElementById('obj-caim-e').value = ageYears || '';
+  document.getElementById('obj-caim-s').value = sexLower;
+  document.getElementById('obj-caim-a').value = activityFactorFromText(p.activity) || '';
+  calcObjCalMayor();
+  document.getElementById('obj-gebm-p').value = p.weight || '';
+  document.getElementById('obj-gebm-h').value = p.height || '';
+  document.getElementById('obj-gebm-e').value = ageYears || '';
+  document.getElementById('obj-gebm-s').value = sexLower;
+  calcObjGebMayor();
+
   renderAutoObjetivoCalc(p);
 }
 
@@ -6000,10 +6613,7 @@ function buildMiniLineChart(points, opts) {
   const valueLabels = points.map((p, i) => `<text x="${xFor(i).toFixed(1)}" y="${(yFor(p.value) - 10).toFixed(1)}" font-size="10.5" font-weight="700" fill="var(--text)" text-anchor="middle">${p.value}${unit}</text>`).join('');
   const dateLabels = points.map((p, i) => `<text x="${xFor(i).toFixed(1)}" y="${height - 6}" font-size="9.5" fill="var(--text-3)" text-anchor="middle">${escapeHtml(String(p.label))}</text>`).join('');
   return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width:100%;height:${height}px;overflow:visible">
-    <defs><linearGradient id="grad-${uid}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/>
-    </linearGradient></defs>
-    <path d="${areaD}" fill="url(#grad-${uid})" stroke="none"/>
+    <path d="${areaD}" fill="${color}" fill-opacity="0.12" stroke="none"/>
     <path d="${pathD}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
     ${dots}${valueLabels}${dateLabels}
   </svg>`;
@@ -6189,21 +6799,14 @@ function buildProgressAreaChart(points, opts) {
   // de disparar (los puntos en sí son chicos). data-idx los liga de vuelta a "points"
   // desde attachProgressChartTooltip().
   const hitTargets = coords.map(([x, y], i) => `<circle class="prog-hit" data-idx="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14" fill="transparent"/>`).join('');
-  const uid = 'pg' + Math.random().toString(36).slice(2, 8);
   // id configurable (opts.svgId) para poder incrustar este mismo gráfico en más de un
   // lugar del DOM a la vez (ej. Resumen + Vista paciente) sin dos elementos con el mismo id.
   const svgId = opts.svgId || 'prog-chart-svg';
 
   return `<svg id="${svgId}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:200px;display:block;overflow:visible">
-    <defs>
-      <linearGradient id="grad-${uid}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${color}" stop-opacity="0.38"/>
-        <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
-      </linearGradient>
-    </defs>
     ${gridLines}
     ${goalLine}
-    <path d="${areaPath}" fill="url(#grad-${uid})" stroke="none"/>
+    <path d="${areaPath}" fill="${color}" fill-opacity="0.18" stroke="none"/>
     <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
     ${dots}
     ${extremeLabels}
@@ -6984,6 +7587,9 @@ function renderHistoriaClinica(p) {
     : '<span class="tag">Sin medicación registrada</span>';
   document.getElementById('d-meds-desc').innerHTML = renderMedsDescList(p.medicacion || []);
   populateMedsGlossarySelect();
+  document.getElementById('d-antecedentes').innerHTML = (p.antecedentesPatologicos || []).length
+    ? p.antecedentesPatologicos.map((x, i) => `<span class="tag">🩹 ${escapeHtml(x)}<span class="tag-remove" onclick="removeAntecedentePatologico(${i})" title="Quitar">×</span></span>`).join('')
+    : '<span class="tag">Sin antecedentes patológicos</span>';
   document.getElementById('d-aspectos').innerHTML = (p.aspectos || []).length
     ? p.aspectos.map((x, i) => `<span class="tag">📌 ${escapeHtml(x)}<span class="tag-remove" onclick="removeAspecto(${i})" title="Quitar">×</span></span>`).join('')
     : '<span class="tag">Sin aspectos especiales</span>';
@@ -7106,6 +7712,25 @@ function removeMedicacion(idx) {
   renderResumenCharts(currentPat);
   showToast('Medicación eliminada', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>');
 }
+function addAntecedentePatologico() {
+  if (!currentPat) return;
+  const input = document.getElementById('hc-antecedente-input');
+  const val = input.value.trim();
+  if (!val) return;
+  currentPat.antecedentesPatologicos = currentPat.antecedentesPatologicos || [];
+  currentPat.antecedentesPatologicos.push(val);
+  input.value = '';
+  renderHistoriaClinica(currentPat);
+  renderResumenCharts(currentPat);
+  showToast('Antecedente agregado', '✅');
+}
+function removeAntecedentePatologico(idx) {
+  if (!currentPat) return;
+  currentPat.antecedentesPatologicos.splice(idx, 1);
+  renderHistoriaClinica(currentPat);
+  renderResumenCharts(currentPat);
+  showToast('Antecedente eliminado', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>');
+}
 function addAspecto() {
   if (!currentPat) return;
   const input = document.getElementById('hc-aspecto-input');
@@ -7206,15 +7831,17 @@ function renderResumenCharts(p) {
   const patBadges = (p.patologias || []).slice(0, 4).map(x => `<span class="tag danger">${escapeHtml(x)}</span>`).join('');
   const alerBadges = (p.alergias || []).slice(0, 4).map(x => `<span class="tag danger">⚠️ ${escapeHtml(x)}</span>`).join('');
   const medsBadges = (p.medicacion || []).slice(0, 4).map(x => `<span class="tag">💊 ${escapeHtml(x)}</span>`).join('');
+  const antecBadges = (p.antecedentesPatologicos || []).slice(0, 4).map(x => `<span class="tag">🩹 ${escapeHtml(x)}</span>`).join('');
   const aspectosBadges = (p.aspectos || []).slice(0, 4).map(x => `<span class="tag">📌 ${escapeHtml(x)}</span>`).join('');
-  const hcHasContent = patBadges || alerBadges || medsBadges || aspectosBadges;
+  const hcHasContent = patBadges || alerBadges || medsBadges || antecBadges || aspectosBadges;
   const historiaEl = document.getElementById('rs-historia-summary');
   if (hcHasContent) {
     historiaEl.innerHTML = `
       ${patBadges ? `<div class="rs-mini-fact"><b>Patologías</b></div><div class="rs-mini-badges">${patBadges}</div>` : ''}
       ${alerBadges ? `<div class="rs-mini-fact" style="margin-top:${patBadges ? '8px' : '0'}"><b>Alergias</b></div><div class="rs-mini-badges">${alerBadges}</div>` : ''}
       ${medsBadges ? `<div class="rs-mini-fact" style="margin-top:${(patBadges||alerBadges) ? '8px' : '0'}"><b>Medicación</b></div><div class="rs-mini-badges">${medsBadges}</div>` : ''}
-      ${aspectosBadges ? `<div class="rs-mini-fact" style="margin-top:${(patBadges||alerBadges||medsBadges) ? '8px' : '0'}"><b>Otros</b></div><div class="rs-mini-badges">${aspectosBadges}</div>` : ''}
+      ${antecBadges ? `<div class="rs-mini-fact" style="margin-top:${(patBadges||alerBadges||medsBadges) ? '8px' : '0'}"><b>Antecedentes Patológicos</b></div><div class="rs-mini-badges">${antecBadges}</div>` : ''}
+      ${aspectosBadges ? `<div class="rs-mini-fact" style="margin-top:${(patBadges||alerBadges||medsBadges||antecBadges) ? '8px' : '0'}"><b>Otros</b></div><div class="rs-mini-badges">${aspectosBadges}</div>` : ''}
     `;
   } else {
     historiaEl.innerHTML = `<div class="rs-mini-fact">Sin antecedentes registrados aún.</div>`;
@@ -7296,15 +7923,62 @@ function savePersonalData() {
   currentPat.phone = document.getElementById('pd-phone').value.trim() || '—';
   currentPat.email = document.getElementById('pd-email').value.trim() || '—';
   currentPat.reason = document.getElementById('pd-reason').value.trim() || 'Sin especificar';
-  currentPat.activity = document.getElementById('pd-activity').value;
   currentPat.tipo = document.getElementById('pd-tipo').value || currentPat.tipo;
 
   document.getElementById('d-meta').innerHTML = buildDetailMetaHtml(currentPat);
   renderResumen(currentPat);
-  renderObjetivosForm(currentPat); // refresca el prellenado de edad/actividad en las calculadoras
   applyFilters(); // refresca la lista de pacientes (edad y demás pueden haber cambiado)
   closePatientDataModal();
   showToast('Datos personales guardados', '✅');
+}
+
+// Estilo de vida: ocupación, actividad física/laboral, sueño, hábitos de convivencia, etc.
+// Son datos de estado actual (no un historial fechado como la Evaluación Nutricional), en línea
+// con cómo ya se manejaban Datos personales — currentPat.activity se mantiene como campo de
+// primer nivel (no anidado en lifestyle) porque las calculadoras de GEB/GET ya lo leen así
+// (ver activityFactorFromText(p.activity) en varios puntos del archivo).
+function renderLifestyle(p) {
+  const lf = p.lifestyle || {};
+  document.getElementById('lf-ocupacion').value = lf.ocupacion || '';
+  document.getElementById('lf-horario-laboral').value = lf.horarioLaboral || '';
+  document.getElementById('lf-tipo-trabajo').value = lf.tipoTrabajo || '';
+  document.getElementById('lf-dificultades-educativas').value = lf.dificultadesEducativas || '';
+  document.getElementById('lf-activity').value = p.activity || 'Sin datos';
+  document.getElementById('lf-activity-detalle').value = lf.activityDetalle || '';
+  document.getElementById('lf-apps').value = lf.apps || '';
+  document.getElementById('lf-convivencia').value = lf.convivencia || '';
+  document.getElementById('lf-quien-compra').value = lf.quienCompra || '';
+  document.getElementById('lf-situacion-economica').value = lf.situacionEconomica || '';
+  document.getElementById('lf-sueno-horas').value = lf.suenoHoras ?? '';
+  document.getElementById('lf-sueno-calidad').value = lf.suenoCalidad || '';
+  document.getElementById('lf-tabaquismo').value = lf.tabaquismo || '';
+  document.getElementById('lf-estres').value = lf.estres || '';
+  document.getElementById('lf-pantallas').value = lf.pantallas ?? '';
+  document.getElementById('lf-observaciones').value = lf.observaciones || '';
+}
+
+function saveLifestyle() {
+  if (!currentPat) return;
+  currentPat.activity = document.getElementById('lf-activity').value;
+  currentPat.lifestyle = {
+    ocupacion: document.getElementById('lf-ocupacion').value.trim(),
+    horarioLaboral: document.getElementById('lf-horario-laboral').value,
+    tipoTrabajo: document.getElementById('lf-tipo-trabajo').value,
+    dificultadesEducativas: document.getElementById('lf-dificultades-educativas').value,
+    activityDetalle: document.getElementById('lf-activity-detalle').value.trim(),
+    apps: document.getElementById('lf-apps').value.trim(),
+    convivencia: document.getElementById('lf-convivencia').value,
+    quienCompra: document.getElementById('lf-quien-compra').value,
+    situacionEconomica: document.getElementById('lf-situacion-economica').value,
+    suenoHoras: document.getElementById('lf-sueno-horas').value || null,
+    suenoCalidad: document.getElementById('lf-sueno-calidad').value,
+    tabaquismo: document.getElementById('lf-tabaquismo').value,
+    estres: document.getElementById('lf-estres').value,
+    pantallas: document.getElementById('lf-pantallas').value || null,
+    observaciones: document.getElementById('lf-observaciones').value.trim(),
+  };
+  renderObjetivosForm(currentPat); // refresca el prellenado de actividad en las calculadoras de GEB/GET
+  showToast('Estilo de vida guardado', '✅');
 }
 
 // Cambia el estado del paciente (Pendiente/Activo/Alta). Antes esto quedaba fijo en
@@ -7375,8 +8049,8 @@ function openPatient(idx) {
   document.getElementById('pd-phone').value = (p.phone && p.phone !== '—') ? p.phone : '';
   document.getElementById('pd-email').value = (p.email && p.email !== '—') ? p.email : '';
   document.getElementById('pd-reason').value = (p.reason && p.reason !== 'Sin especificar') ? p.reason : '';
-  document.getElementById('pd-activity').value = p.activity || 'Sin datos';
   document.getElementById('pd-tipo').value = p.tipo || 'adulto';
+  renderLifestyle(p);
   renderHistoriaClinica(p);
   renderEvalNutricional(p);
   renderAntroSummary(p);
@@ -7410,7 +8084,7 @@ let currentDetailTab = 'overview'; // solapa activa de la ficha del paciente —
 function switchTab(el, tab) {
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
-  ['overview','historia','evalnut','antro','objetivos','files','diagnostico'].forEach(t => {
+  ['overview','lifestyle','historia','evalnut','antro','objetivos','files','diagnostico'].forEach(t => {
     const e = document.getElementById('tab-'+t);
     if (e) e.style.display = t===tab ? 'block':'none';
   });
@@ -7446,6 +8120,26 @@ function calcAgeFromISO(isoDate) {
   const m = today.getMonth() - birth.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
   return age;
+}
+// Edad en meses completos — usada por las calculadoras pediátricas (peso teórico, Schofield),
+// que trabajan en meses/años decimales en vez de años enteros para no perder precisión en
+// bebés y preescolares.
+function calcAgeMonthsFromISO(isoDate) {
+  if (!isoDate) return null;
+  const birth = new Date(isoDate + 'T00:00:00');
+  if (isNaN(birth.getTime())) return null;
+  const today = new Date();
+  let months = (today.getFullYear() - birth.getFullYear()) * 12 + (today.getMonth() - birth.getMonth());
+  if (today.getDate() < birth.getDate()) months--;
+  return Math.max(0, months);
+}
+function getPatientAgeMonths(p) {
+  if (p.birthISO) {
+    const m = calcAgeMonthsFromISO(p.birthISO);
+    if (m !== null) return m;
+  }
+  const a = getPatientAge(p);
+  return (a === 0 || a) ? a * 12 : null;
 }
 // Calcula el "tipo de paciente" (Niño/Adulto/Adulto mayor) según una edad dada.
 function tipoFromAge(age) {
@@ -7496,9 +8190,9 @@ function ageLabel(p) {
 // Color del avatar según el sexo del paciente (azul/rosa/gris), manteniendo siempre
 // las dos iniciales. Reemplaza al color aleatorio que se asignaba antes al crear el paciente.
 function avatarColorForSex(sex) {
-  if (sex === 'F') return 'linear-gradient(135deg,#ec4899,#f472b6)';
-  if (sex === 'M') return 'linear-gradient(135deg,#3b82f6,#60a5fa)';
-  return 'linear-gradient(135deg,#9ca3af,#d1d5db)';
+  if (sex === 'F') return '#ec4899';
+  if (sex === 'M') return '#3b82f6';
+  return '#9ca3af';
 }
 
 function newId(prefix) {
@@ -7767,6 +8461,7 @@ function buildDiagnosticoSummaryHtml(p) {
   const antecedentesRows = [
     (p.patologias || []).length ? fieldBlock('Patologías', escapeHtml(p.patologias.join(' · '))) : '',
     (p.alergias || []).length ? fieldBlock('Alergias', escapeHtml(p.alergias.join(' · '))) : '',
+    (p.antecedentesPatologicos || []).length ? fieldBlock('Antecedentes Patológicos', escapeHtml(p.antecedentesPatologicos.join(' · '))) : '',
   ].filter(Boolean).join('');
 
   const latest = getLatestRecordatorio(p);
@@ -8046,12 +8741,25 @@ function antroReportRow(label, value, unit, tone, normalText) {
 function renderAntroFullSummary(p) {
   const el = document.getElementById('antro-full-summary');
   if (!el) return;
-  const latest = historySortedDesc(p)[0] || {};
+  // Por campo, no por consulta: la entrada más reciente por FECHA puede ser el "Registro
+  // inicial" automático (sin medidas, fechado al alta) si después se cargan consultas reales
+  // con fecha pasada (carga retroactiva) -- eso hacía que todo el bloque de circunferencias/
+  // pliegues mostrara "Sin datos" pese a estar cargados en una consulta real. Cada campo ahora
+  // se resuelve de forma independiente contra la consulta no vacía más reciente PARA ESE CAMPO.
+  const sorted = historySortedDesc(p);
+  const latestField = key => {
+    for (const h of sorted) {
+      if (h[key] !== undefined && h[key] !== null && h[key] !== '') return h[key];
+    }
+    return undefined;
+  };
   const { value: imc, cat: imcCat } = getIMCInfo(p.weight, p.height);
   const imcTone = imc === null ? null : (imcCat === 'Peso normal' ? 'ok' : imcCat === 'Obesidad' ? 'danger' : 'warn');
+  const cintura = latestField('cintura');
+  const cadera = latestField('cadera');
   let icc = null, iccTone = null;
-  if (latest.cintura && latest.cadera) {
-    icc = (latest.cintura / latest.cadera).toFixed(2);
+  if (cintura && cadera) {
+    icc = (cintura / cadera).toFixed(2);
     iccTone = classifyICC(icc, p.sex);
   }
   const rows = [
@@ -8060,8 +8768,9 @@ function renderAntroFullSummary(p) {
     antroSummaryField('IMC', imc, '', imcTone, imcTone ? IMC_NORMAL_RANGE_TEXT : ''),
     antroSummaryField('ICC (cintura/cadera)', icc, '', iccTone, iccTone ? getAntroNormalRangeText('icc', p.sex) : ''),
     ...Object.values(ANTRO_MEASUREMENT_FIELDS).map(f => {
-      const tone = classifyAntroValue(f.key, latest[f.key], p.sex);
-      return antroSummaryField(f.label, latest[f.key], f.unit, tone, tone ? getAntroNormalRangeText(f.key, p.sex) : '');
+      const val = latestField(f.key);
+      const tone = classifyAntroValue(f.key, val, p.sex);
+      return antroSummaryField(f.label, val, f.unit, tone, tone ? getAntroNormalRangeText(f.key, p.sex) : '');
     }),
   ].join('');
   el.innerHTML = `<div class="rs-grid">${rows}</div>`;
@@ -8219,7 +8928,7 @@ function finishConsultSave(wasEditing, toastMsg) {
   showToast(toastMsg || (wasEditing ? 'Consulta actualizada correctamente' : 'Consulta registrada correctamente'), '✅');
   editingHistoryIdx = null;
   openPatient(idx);                                              // refresca métricas, IMC e historia
-  switchTab(document.querySelectorAll('.tab-item')[3], 'antro'); // deja a la vista la consulta recién cargada
+  switchTab(document.querySelectorAll('.tab-item')[4], 'antro'); // deja a la vista la consulta recién cargada
   applyFilters();                                                 // refresca IMC en el listado de pacientes
   renderConsultHistoryList();                                     // por si el historial completo sigue abierto detrás
 }
@@ -8310,7 +9019,7 @@ function deleteConsultation(idx) {
     syncPatientCurrentMetricsFromHistory(currentPat);
     const pIdx = patients.indexOf(currentPat);
     openPatient(pIdx);
-    switchTab(document.querySelectorAll('.tab-item')[3], 'antro');
+    switchTab(document.querySelectorAll('.tab-item')[4], 'antro');
     applyFilters();
     renderConsultHistoryList();
     showToast('Consulta eliminada', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>');
@@ -8359,7 +9068,7 @@ function savePatient() {
     email:'—', birth: dob ? formatDateLabel(dob) : '—',
     reason: motivo,
     goals:'Por definir', activity:'Sin datos',
-    patologias:[], alergias:[], medicacion:[], aspectos:[],
+    patologias:[], alergias:[], medicacion:[], antecedentesPatologicos:[], aspectos:[],
     avatar: (nom[0]+ape[0]).toUpperCase(),
     ai:'',
     history:[{date:todayLabel,title:'Registro inicial',desc:'Paciente dado de alta en el sistema.',dot:'#a78bfa'}],
@@ -9089,6 +9798,212 @@ function calcBF() {
   document.getElementById('bf-r').classList.add('show');
 }
 
+function calcProteico() {
+  const p = parseFloat(document.getElementById('prot-p').value);
+  const n = parseFloat(document.getElementById('prot-n').value);
+  if (!p || !n || hasNegativeValue(p)) return;
+  document.getElementById('prot-v').textContent = Math.round(p * n);
+  document.getElementById('prot-r').classList.add('show');
+}
+
+// Ingesta adecuada (Adequate Intake) de fibra del Institute of Medicine — por franja etaria,
+// y por sexo a partir de los 9 años (antes no diferencia).
+function calcFibrico() {
+  const age = parseFloat(document.getElementById('fib-e').value);
+  const sex = document.getElementById('fib-s').value;
+  if (!age || !sex || hasNegativeValue(age)) return;
+  let g;
+  if (age <= 3) g = 19;
+  else if (age <= 8) g = 25;
+  else if (age <= 13) g = sex === 'm' ? 31 : 26;
+  else if (age <= 50) g = sex === 'm' ? 38 : 25;
+  else g = sex === 'm' ? 30 : 21;
+  document.getElementById('fib-v').textContent = g;
+  document.getElementById('fib-r').classList.add('show');
+}
+
+// Método de Holliday-Segar: 100 ml/kg para los primeros 10kg, 50 ml/kg para los siguientes
+// 10kg (10-20kg), y 20 ml/kg por cada kg por encima de 20 -- fórmula estándar de requerimiento
+// hídrico diario, usada tanto en pediatría como en adultos.
+function calcHidrico() {
+  const p = parseFloat(document.getElementById('agua-p').value);
+  if (!p || hasNegativeValue(p)) return;
+  let ml;
+  if (p <= 10) ml = p * 100;
+  else if (p <= 20) ml = 1000 + (p - 10) * 50;
+  else ml = 1500 + (p - 20) * 20;
+  ml = Math.round(ml);
+  document.getElementById('agua-v').textContent = ml;
+  document.getElementById('agua-l').textContent = (ml / 1000).toFixed(1) + ' litros / día';
+  document.getElementById('agua-r').classList.add('show');
+}
+
+// ── CALCULADORAS — fórmulas específicas por franja etaria ──────────────────────
+// Harris-Benedict/Lorentz/Broca/Hamwi (arriba) están validadas para adultos — aplicarlas
+// tal cual a niños o adultos mayores da resultados sin sentido (ej. un "peso ideal"
+// negativo con Hamwi en un preescolar). Estas fórmulas cubren esos dos grupos por separado,
+// manteniendo intactas las calculadoras de adultos ya existentes.
+
+// Peso teórico para la edad: fórmulas rápidas de uso clínico habitual en pediatría
+// (no reemplazan la evaluación real de crecimiento, que sigue viviendo en el módulo Curvas
+// con las tablas OMS reales — esta es solo una estimación rápida de consultorio).
+function pesoTeoricoNinoValue(meses) {
+  if (!meses || meses < 3) return null;
+  const anios = meses / 12;
+  let kg;
+  if (meses <= 12) kg = (meses + 9) / 2;
+  else if (anios <= 6) kg = anios * 2 + 8;
+  else if (anios <= 12) kg = ((anios * 7) - 5) / 2;
+  else return null;
+  return Math.round(kg * 10) / 10;
+}
+
+// Ecuación de Schofield (peso), por franja etaria y sexo — la referencia estándar para
+// estimar el gasto energético basal en pediatría (0-18 años), a diferencia de
+// Harris-Benedict que solo está validada en adultos.
+function schofieldGEBValue(sexo, pesoKg, edadAnios) {
+  if (!sexo || !pesoKg || edadAnios == null || isNaN(edadAnios) || edadAnios < 0 || edadAnios > 18) return null;
+  let a, b;
+  if (edadAnios < 3) { a = sexo === 'm' ? 59.512 : 58.317; b = sexo === 'm' ? -30.4 : -31.1; }
+  else if (edadAnios < 10) { a = sexo === 'm' ? 22.706 : 20.315; b = sexo === 'm' ? 504.3 : 485.9; }
+  else { a = sexo === 'm' ? 17.686 : 13.384; b = sexo === 'm' ? 658.2 : 692.6; }
+  return Math.round(a * pesoKg + b);
+}
+
+// Adultos mayores: rango de peso saludable según IMC 22-27 (más protector en 60+ que el
+// rango adulto estándar de 18.5-24.9, donde el extremo bajo se asocia a peor pronóstico).
+function pesoSaludableMayorRange(alturaCm) {
+  if (!alturaCm) return null;
+  const h = alturaCm / 100;
+  return { min: Math.round(22 * h * h), max: Math.round(27 * h * h) };
+}
+
+// Ecuación de Mifflin-St Jeor — preferida sobre Harris-Benedict en personas mayores según
+// las guías actuales de nutrición clínica.
+function mifflinStJeorValue(sexo, pesoKg, alturaCm, edadAnios) {
+  if (!sexo || !pesoKg || !alturaCm || !edadAnios) return null;
+  const base = 10 * pesoKg + 6.25 * alturaCm - 5 * edadAnios;
+  return Math.round(sexo === 'm' ? base + 5 : base - 161);
+}
+
+// Puntos de corte de IMC ajustados para 65+ (OPS/OMS): el rango "normal" se corre hacia
+// arriba respecto del adulto estándar, porque en esta población el bajo peso se asocia a
+// peor pronóstico más que un IMC moderadamente elevado.
+function imcCategoriaMayor(imc) {
+  if (imc < 23) return { cat: 'Bajo peso', color: '#60a5fa', w: '20%' };
+  if (imc < 28) return { cat: '✓ Peso normal (ajustado 65+)', color: '#34d399', w: '45%' };
+  if (imc < 32) return { cat: 'Sobrepeso', color: '#fbbf24', w: '70%' };
+  return { cat: 'Obesidad', color: '#f87171', w: '90%' };
+}
+
+function calcPesoTeoricoNino() {
+  const meses = parseFloat(document.getElementById('pin-edad').value);
+  const val = pesoTeoricoNinoValue(meses);
+  if (val == null || hasNegativeValue(meses)) { document.getElementById('pin-r').classList.remove('show'); return; }
+  document.getElementById('pin-v').textContent = val;
+  document.getElementById('pin-r').classList.add('show');
+}
+function applyPesoTeoricoNino() {
+  const val = parseFloat(document.getElementById('pin-v').textContent);
+  if (isNaN(val)) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  openCalcApplyPicker({ type: 'peso', value: val, label: 'Peso teórico (niño)' });
+}
+
+function calcCalNino() {
+  const p = parseFloat(document.getElementById('cain-p').value);
+  const e = parseFloat(document.getElementById('cain-e').value);
+  const s = document.getElementById('cain-s').value;
+  const a = parseFloat(document.getElementById('cain-a').value);
+  if (!p || isNaN(e) || !s || !a || hasNegativeValue(p, e)) { document.getElementById('cain-r').classList.remove('show'); return; }
+  const geb = schofieldGEBValue(s, p, e);
+  if (geb == null) { document.getElementById('cain-r').classList.remove('show'); return; }
+  document.getElementById('cain-v').textContent = Math.round(geb * a);
+  document.getElementById('cain-r').classList.add('show');
+}
+function applyCalNino() {
+  const val = parseFloat(document.getElementById('cain-v').textContent);
+  if (isNaN(val)) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  openCalcApplyPicker({ type: 'kcal', value: val, label: 'Requerimiento calórico (niño)' });
+}
+
+function calcGebNino() {
+  const p = parseFloat(document.getElementById('gebn-p').value);
+  const e = parseFloat(document.getElementById('gebn-e').value);
+  const s = document.getElementById('gebn-s').value;
+  if (!p || isNaN(e) || !s || hasNegativeValue(p, e)) { document.getElementById('gebn-r').classList.remove('show'); return; }
+  const geb = schofieldGEBValue(s, p, e);
+  if (geb == null) { document.getElementById('gebn-r').classList.remove('show'); return; }
+  document.getElementById('gebn-v').textContent = geb;
+  document.getElementById('gebn-r').classList.add('show');
+}
+
+function calcImcNino() {
+  const p = parseFloat(document.getElementById('imcn-p').value);
+  const h = parseFloat(document.getElementById('imcn-h').value) / 100;
+  if (!p || !h || hasNegativeValue(p, h)) { document.getElementById('imcn-r').classList.remove('show'); return; }
+  document.getElementById('imcn-v').textContent = (p / (h * h)).toFixed(1);
+  document.getElementById('imcn-r').classList.add('show');
+}
+
+function calcPesoSaludableMayor() {
+  const h = parseFloat(document.getElementById('pim-h').value);
+  const range = pesoSaludableMayorRange(h);
+  if (!range || hasNegativeValue(h)) { document.getElementById('pim-r').classList.remove('show'); return; }
+  document.getElementById('pim-v').textContent = `${range.min}–${range.max}`;
+  document.getElementById('pim-r').classList.add('show');
+}
+function applyPesoSaludableMayor() {
+  const h = parseFloat(document.getElementById('pim-h').value);
+  const range = pesoSaludableMayorRange(h);
+  if (!range) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  const mid = Math.round((range.min + range.max) / 2);
+  openCalcApplyPicker({ type: 'peso', value: mid, label: 'Peso saludable (adulto mayor)' });
+}
+
+function calcCalMayor() {
+  const p = parseFloat(document.getElementById('caim-p').value);
+  const h = parseFloat(document.getElementById('caim-h').value);
+  const e = parseFloat(document.getElementById('caim-e').value);
+  const s = document.getElementById('caim-s').value;
+  const a = parseFloat(document.getElementById('caim-a').value);
+  if (!p || !h || !e || !s || !a || hasNegativeValue(p, h, e)) { document.getElementById('caim-r').classList.remove('show'); return; }
+  const geb = mifflinStJeorValue(s, p, h, e);
+  if (geb == null) { document.getElementById('caim-r').classList.remove('show'); return; }
+  document.getElementById('caim-v').textContent = Math.round(geb * a);
+  document.getElementById('caim-r').classList.add('show');
+}
+function applyCalMayor() {
+  const val = parseFloat(document.getElementById('caim-v').textContent);
+  if (isNaN(val)) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  openCalcApplyPicker({ type: 'kcal', value: val, label: 'Requerimiento calórico (adulto mayor)' });
+}
+
+function calcGebMayor() {
+  const p = parseFloat(document.getElementById('gebm-p').value);
+  const h = parseFloat(document.getElementById('gebm-h').value);
+  const e = parseFloat(document.getElementById('gebm-e').value);
+  const s = document.getElementById('gebm-s').value;
+  if (!p || !h || !e || !s || hasNegativeValue(p, h, e)) { document.getElementById('gebm-r').classList.remove('show'); return; }
+  const geb = mifflinStJeorValue(s, p, h, e);
+  if (geb == null) { document.getElementById('gebm-r').classList.remove('show'); return; }
+  document.getElementById('gebm-v').textContent = geb;
+  document.getElementById('gebm-r').classList.add('show');
+}
+
+function calcImcMayor() {
+  const p = parseFloat(document.getElementById('imcm-p').value);
+  const h = parseFloat(document.getElementById('imcm-h').value) / 100;
+  if (!p || !h || hasNegativeValue(p, h)) { document.getElementById('imcm-r').classList.remove('show'); return; }
+  const v = (p / (h * h)).toFixed(1);
+  const info = imcCategoriaMayor(parseFloat(v));
+  document.getElementById('imcm-v').textContent = v;
+  document.getElementById('imcm-c').textContent = info.cat;
+  document.getElementById('imcm-c').style.color = info.color;
+  document.getElementById('imcm-b').style.width = info.w;
+  document.getElementById('imcm-b').style.background = info.color;
+  document.getElementById('imcm-r').classList.add('show');
+}
+
 // ── CALCULADORAS — "Aplicar a paciente" ────────────────────────────────────────
 // Permite enviar el resultado de una calculadora directa a la ficha de un paciente
 // real, sin tener que anotarlo a mano y volver a cargarlo. Antes esta página quedaba
@@ -9275,6 +10190,115 @@ function calcObjFib() {
   if(!k||hasNegativeValue(k)) { document.getElementById('obj-fib-r').classList.remove('show'); return; }
   document.getElementById('obj-fib-v').textContent=Math.round((k/1000)*14);
   document.getElementById('obj-fib-r').classList.add('show');
+}
+
+// ── Objetivos — calculadoras pediátricas y de adultos mayores ─────────────────
+// Mismas fórmulas que la página Calculadoras (pesoTeoricoNinoValue/schofieldGEBValue/
+// pesoSaludableMayorRange/mifflinStJeorValue), con ids propios (obj-pin-*/obj-cain-*/
+// obj-gebn-*/obj-pim-*/obj-caim-*/obj-gebm-*) para poder precargarlas con los datos del
+// paciente sin interferir con las calculadoras de adultos ya existentes.
+function calcObjPesoTeoricoNino() {
+  const meses = parseFloat(document.getElementById('obj-pin-edad').value);
+  const val = pesoTeoricoNinoValue(meses);
+  if (val == null || hasNegativeValue(meses)) { document.getElementById('obj-pin-r').classList.remove('show'); return; }
+  document.getElementById('obj-pin-v').textContent = val;
+  document.getElementById('obj-pin-r').classList.add('show');
+}
+function calcObjCalNino() {
+  const p = parseFloat(document.getElementById('obj-cain-p').value);
+  const e = parseFloat(document.getElementById('obj-cain-e').value);
+  const s = document.getElementById('obj-cain-s').value;
+  const a = parseFloat(document.getElementById('obj-cain-a').value);
+  if (!p || isNaN(e) || !s || !a || hasNegativeValue(p, e)) { document.getElementById('obj-cain-r').classList.remove('show'); return; }
+  const geb = schofieldGEBValue(s, p, e);
+  if (geb == null) { document.getElementById('obj-cain-r').classList.remove('show'); return; }
+  document.getElementById('obj-cain-v').textContent = Math.round(geb * a);
+  document.getElementById('obj-cain-r').classList.add('show');
+}
+function calcObjGebNino() {
+  const p = parseFloat(document.getElementById('obj-gebn-p').value);
+  const e = parseFloat(document.getElementById('obj-gebn-e').value);
+  const s = document.getElementById('obj-gebn-s').value;
+  if (!p || isNaN(e) || !s || hasNegativeValue(p, e)) { document.getElementById('obj-gebn-r').classList.remove('show'); return; }
+  const geb = schofieldGEBValue(s, p, e);
+  if (geb == null) { document.getElementById('obj-gebn-r').classList.remove('show'); return; }
+  document.getElementById('obj-gebn-v').textContent = geb;
+  document.getElementById('obj-gebn-r').classList.add('show');
+}
+function calcObjPesoSaludableMayor() {
+  const h = parseFloat(document.getElementById('obj-pim-h').value);
+  const range = pesoSaludableMayorRange(h);
+  if (!range || hasNegativeValue(h)) { document.getElementById('obj-pim-r').classList.remove('show'); return; }
+  document.getElementById('obj-pim-v').textContent = `${range.min}–${range.max}`;
+  document.getElementById('obj-pim-r').classList.add('show');
+}
+function calcObjCalMayor() {
+  const p = parseFloat(document.getElementById('obj-caim-p').value);
+  const h = parseFloat(document.getElementById('obj-caim-h').value);
+  const e = parseFloat(document.getElementById('obj-caim-e').value);
+  const s = document.getElementById('obj-caim-s').value;
+  const a = parseFloat(document.getElementById('obj-caim-a').value);
+  if (!p || !h || !e || !s || !a || hasNegativeValue(p, h, e)) { document.getElementById('obj-caim-r').classList.remove('show'); return; }
+  const geb = mifflinStJeorValue(s, p, h, e);
+  if (geb == null) { document.getElementById('obj-caim-r').classList.remove('show'); return; }
+  document.getElementById('obj-caim-v').textContent = Math.round(geb * a);
+  document.getElementById('obj-caim-r').classList.add('show');
+}
+function calcObjGebMayor() {
+  const p = parseFloat(document.getElementById('obj-gebm-p').value);
+  const h = parseFloat(document.getElementById('obj-gebm-h').value);
+  const e = parseFloat(document.getElementById('obj-gebm-e').value);
+  const s = document.getElementById('obj-gebm-s').value;
+  if (!p || !h || !e || !s || hasNegativeValue(p, h, e)) { document.getElementById('obj-gebm-r').classList.remove('show'); return; }
+  const geb = mifflinStJeorValue(s, p, h, e);
+  if (geb == null) { document.getElementById('obj-gebm-r').classList.remove('show'); return; }
+  document.getElementById('obj-gebm-v').textContent = geb;
+  document.getElementById('obj-gebm-r').classList.add('show');
+}
+
+// "Usar como..." de las calculadoras pediátricas/adultos mayores — mismo patrón que
+// useIdealWeightAsGoal/useCalAsObjetivo/useGEBAsObjetivo, escriben en los mismos campos
+// de "Objetivos del paciente" (no hay campos separados por franja etaria: el objetivo
+// final del paciente es uno solo, más allá de con qué calculadora se haya obtenido).
+function useIdealWeightNinoAsGoal() {
+  if (!currentPat) return;
+  const val = parseFloat(document.getElementById('obj-pin-v').textContent);
+  if (isNaN(val)) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  document.getElementById('obj-peso-objetivo').value = val;
+  currentPat.pesoObjetivo = val;
+  renderResumen(currentPat);
+  showToast(`Peso objetivo guardado: ${val} kg`, '✅');
+}
+function useCalNinoAsObjetivo() {
+  setKcalObjetivo(document.getElementById('obj-cain-v').textContent);
+}
+function useGebNinoAsObjetivo() {
+  if (!currentPat) return;
+  const val = parseFloat(document.getElementById('obj-gebn-v').textContent);
+  if (isNaN(val)) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  document.getElementById('obj-geb-objetivo').value = Math.round(val);
+  saveObjetivos();
+}
+function useIdealWeightMayorAsGoal() {
+  if (!currentPat) return;
+  const h = parseFloat(document.getElementById('obj-pim-h').value);
+  const range = pesoSaludableMayorRange(h);
+  if (!range) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  const mid = Math.round((range.min + range.max) / 2);
+  document.getElementById('obj-peso-objetivo').value = mid;
+  currentPat.pesoObjetivo = mid;
+  renderResumen(currentPat);
+  showToast(`Peso objetivo guardado: ${mid} kg`, '✅');
+}
+function useCalMayorAsObjetivo() {
+  setKcalObjetivo(document.getElementById('obj-caim-v').textContent);
+}
+function useGebMayorAsObjetivo() {
+  if (!currentPat) return;
+  const val = parseFloat(document.getElementById('obj-gebm-v').textContent);
+  if (isNaN(val)) { showToast('Completá la calculadora primero', '⚠️'); return; }
+  document.getElementById('obj-geb-objetivo').value = Math.round(val);
+  saveObjetivos();
 }
 
 // Calculadora automática: usa el GEB (Harris-Benedict) calculado con los datos actuales
@@ -9700,7 +10724,7 @@ function viewVgsPdf(source, patIdx, vgsIdx) {
     if (!v) return;
     label = `${v.nombre} (sin registrar)`;
     avatarInitials = v.nombre.split(' ').filter(Boolean).slice(0, 2).map(s => s[0]).join('').toUpperCase();
-    avatarColor = 'linear-gradient(135deg,#9ca3af,#d1d5db)';
+    avatarColor = '#9ca3af';
   }
   if (!v) return;
   // Recuerda desde dónde se abrió (la sección VGS general, o una solapa puntual dentro
@@ -10803,6 +11827,7 @@ let reportSection = 'overview';
 const REPORT_SECTION_LABELS = {
   overview: 'Informe Nutricional',
   resumen: 'Resumen',
+  lifestyle: 'Estilo de vida',
   historia: 'Historia Clínica',
   evalnut: 'Evaluación Nutricional',
   antro: 'Antropometría',
@@ -10814,8 +11839,8 @@ const REPORT_SECTION_LABELS = {
 // se incluye también "diagnostico", que no tiene su propio extracto de reporte pero sí
 // hay que poder volver a ella). Se usan para el texto del botón "Volver" y para saber
 // a qué solapa regresar al cerrar el reporte.
-const PATIENT_TAB_LABELS = { overview: 'Resumen', historia: 'Historia Clínica', evalnut: 'Evaluación Nutricional', antro: 'Antropometría', objetivos: 'Objetivos', files: 'Resultados Bioquímicos', diagnostico: 'Diagnóstico' };
-const PATIENT_TAB_INDEX = { overview: 0, historia: 1, evalnut: 2, antro: 3, objetivos: 4, files: 5, diagnostico: 6 };
+const PATIENT_TAB_LABELS = { overview: 'Resumen', lifestyle: 'Estilo de vida', historia: 'Historia Clínica', evalnut: 'Evaluación Nutricional', antro: 'Antropometría', objetivos: 'Objetivos', files: 'Resultados Bioquímicos', diagnostico: 'Diagnóstico' };
+const PATIENT_TAB_INDEX = { overview: 0, lifestyle: 1, historia: 2, evalnut: 3, antro: 4, objetivos: 5, files: 6, diagnostico: 7 };
 // Solapa real desde la que se abrió el reporte (puede diferir de reportSection: por
 // ejemplo, desde Diagnóstico se abre igual el informe completo —reportSection
 // 'overview'— pero el botón "Volver" debe decir y llevar de nuevo a Diagnóstico).
@@ -11285,6 +12310,9 @@ function renderReportSheet(pOverride, draftOverride, targetId, sectionOverride) 
 
   const section = rsSectionBlock;
 
+  // ── Estilo de vida (ocupación, actividad física/laboral, sueño, convivencia, etc.) ──
+  const lifestyleBody = buildLifestyleReportBody(p);
+
   // ── Antecedentes clínicos (patologías, alergias, medicación, otros, VGS, curvas, diagnóstico) ──
   const antecedentesBody = buildHistoriaReportBody(p);
 
@@ -11364,6 +12392,7 @@ function renderReportSheet(pOverride, draftOverride, targetId, sectionOverride) 
     </div>
 
     ${section('📋','Datos generales', `<div class="rs-grid">${generales}</div>`)}
+    ${lifestyleBody}
     ${antecedentesBody}
     ${evalnutBody}
     ${antroBody}${antroAlertHtml}
@@ -11439,6 +12468,7 @@ function buildResumenReportBody(p) {
     (p.patologias || []).length ? fieldBlock('Patologías', escapeHtml(p.patologias.join(' · '))) : '',
     (p.alergias || []).length ? fieldBlock('Alergias', escapeHtml(p.alergias.join(' · '))) : '',
     (p.medicacion || []).length ? fieldBlock('Medicación', escapeHtml(p.medicacion.join(' · '))) : '',
+    (p.antecedentesPatologicos || []).length ? fieldBlock('Antecedentes Patológicos', escapeHtml(p.antecedentesPatologicos.join(' · '))) : '',
     (p.aspectos || []).length ? fieldBlock('Otros', escapeHtml(p.aspectos.join(' · '))) : '',
   ].filter(Boolean).join('');
 
@@ -11463,6 +12493,29 @@ function buildResumenReportBody(p) {
     + section('🩺', 'Diagnóstico', p.ai ? `<div class="rs-obs-text">${escapeHtml(p.ai)}</div>` : '');
 }
 
+function buildLifestyleReportBody(p) {
+  const section = rsSectionBlock;
+  const lf = p.lifestyle || {};
+  const rows = [
+    fieldBlock('Ocupación / profesión', lf.ocupacion ? escapeHtml(lf.ocupacion) : ''),
+    fieldBlock('Horario laboral', lf.horarioLaboral),
+    fieldBlock('Tipo de actividad laboral', lf.tipoTrabajo),
+    fieldBlock('Dificultades educativas', lf.dificultadesEducativas),
+    fieldBlock('Nivel de actividad física', p.activity && p.activity !== 'Sin datos' ? p.activity : ''),
+    fieldBlock('Detalle de actividad física', lf.activityDetalle ? escapeHtml(lf.activityDetalle) : ''),
+    fieldBlock('Uso de apps de fitness/seguimiento', lf.apps ? escapeHtml(lf.apps) : ''),
+    fieldBlock('Convivencia', lf.convivencia),
+    fieldBlock('Quién hace las compras', lf.quienCompra),
+    fieldBlock('Situación económica / acceso a alimentos', lf.situacionEconomica),
+    fieldBlock('Horas de sueño promedio', lf.suenoHoras ? `${lf.suenoHoras} hs` : ''),
+    fieldBlock('Calidad del sueño', lf.suenoCalidad),
+    fieldBlock('Tabaquismo', lf.tabaquismo),
+    fieldBlock('Nivel de estrés percibido', lf.estres),
+    fieldBlock('Horas sentado/a o frente a pantallas', lf.pantallas ? `${lf.pantallas} hs/día` : ''),
+  ].filter(Boolean).join('');
+  return section('🧬', 'Estilo de vida', rows ? `<div class="rs-grid">${rows}</div>${lf.observaciones ? `<div class="rs-obs-text" style="margin-top:10px">${escapeHtml(lf.observaciones)}</div>` : ''}` : '<div class="rs-mini-fact">Sin datos de estilo de vida registrados.</div>');
+}
+
 function buildHistoriaReportBody(p) {
   const section = rsSectionBlock;
   const pats = (p.patologias || []).map(x => `<span class="rs-badge">${escapeHtml(x)}</span>`).join('');
@@ -11471,6 +12524,7 @@ function buildHistoriaReportBody(p) {
   if (pats) rows.push(`<div><div class="rs-field-label">Patologías</div><div class="rs-badges" style="margin-top:4px">${pats}</div></div>`);
   if (alers) rows.push(`<div><div class="rs-field-label">Alergias</div><div class="rs-badges" style="margin-top:4px">${alers}</div></div>`);
   if ((p.medicacion || []).length) rows.push(fieldBlock('Medicación', escapeHtml(p.medicacion.join(' · '))));
+  if ((p.antecedentesPatologicos || []).length) rows.push(fieldBlock('Antecedentes Patológicos', escapeHtml(p.antecedentesPatologicos.join(' · '))));
   if ((p.aspectos || []).length) rows.push(fieldBlock('Otros', escapeHtml(p.aspectos.join(' · '))));
   // Breve descripción de cada medicamento (glosario), igual que en la solapa Historia Clínica.
   const medsDescHtml = renderMedsDescList(p.medicacion || []);
@@ -11547,17 +12601,28 @@ function buildAntroReportBody(p) {
     <div class="rs-metric"><div class="rs-metric-val">${p.height || '—'}</div><div class="rs-metric-unit">cm</div><div class="rs-metric-label">Talla</div></div>
     <div class="rs-metric"><div class="rs-metric-val">${imc !== null ? imc : '—'}</div><div class="rs-metric-unit">IMC</div><div class="rs-metric-label">${imcCat}</div></div>
   </div>`;
-  const sorted = historySortedDesc(p).slice(0, ANTRO_LIST_MAX);
-  const listRows = sorted.map(h => {
+  const sorted = historySortedDesc(p);
+  const listRows = sorted.slice(0, ANTRO_LIST_MAX).map(h => {
     const partes = [];
     if (h.weight) partes.push(`${h.weight} kg`);
     if (h.height) partes.push(`${h.height} cm`);
     return fieldBlock(`${h.date} · ${h.title || ''}`, partes.join(' · ') || '—');
   }).join('');
-  const latest = sorted[0] || {};
+  // Por campo, no por consulta: ver el mismo comentario en renderAntroFullSummary — la
+  // entrada más reciente por fecha puede ser el "Registro inicial" automático (sin datos) si
+  // se cargan consultas reales con fecha pasada, así que cada campo busca su propia consulta
+  // no vacía más reciente en vez de depender todos de sorted[0].
+  const latestField = key => {
+    for (const h of sorted) {
+      if (h[key] !== undefined && h[key] !== null && h[key] !== '') return h[key];
+    }
+    return undefined;
+  };
+  const cintura = latestField('cintura');
+  const cadera = latestField('cadera');
   let icc = null, iccTone = null;
-  if (latest.cintura && latest.cadera) {
-    icc = (latest.cintura / latest.cadera).toFixed(2);
+  if (cintura && cadera) {
+    icc = (cintura / cadera).toFixed(2);
     iccTone = classifyICC(icc, p.sex);
   }
   // Mismas 22 medidas que la solapa Antropometría, pero en filas con el círculo de
@@ -11568,12 +12633,14 @@ function buildAntroReportBody(p) {
     antroReportRow('IMC', imc, '', imcTone, imcTone ? IMC_NORMAL_RANGE_TEXT : ''),
     antroReportRow('ICC (cintura/cadera)', icc, '', iccTone, iccTone ? getAntroNormalRangeText('icc', p.sex) : ''),
     ...Object.values(ANTRO_MEASUREMENT_FIELDS).map(f => {
-      const tone = classifyAntroValue(f.key, latest[f.key], p.sex);
-      return antroReportRow(f.label, latest[f.key], f.unit, tone, tone ? getAntroNormalRangeText(f.key, p.sex) : '');
+      const val = latestField(f.key);
+      const tone = classifyAntroValue(f.key, val, p.sex);
+      return antroReportRow(f.label, val, f.unit, tone, tone ? getAntroNormalRangeText(f.key, p.sex) : '');
     }),
   ].join('');
-  const notasAlimentacionHtml = latest.recordatorio24h
-    ? `<div class="rs-mini-fact">${escapeHtml(latest.recordatorio24h)}</div>`
+  const latestRecordatorio24h = latestField('recordatorio24h');
+  const notasAlimentacionHtml = latestRecordatorio24h
+    ? `<div class="rs-mini-fact">${escapeHtml(latestRecordatorio24h)}</div>`
     : '';
   return section('📏', 'Antropometría', metricRow)
     + section('📖', 'Últimas mediciones', listRows ? `<div class="rs-grid">${listRows}</div>` : '')
@@ -11638,6 +12705,7 @@ function renderSectionReportSheet(p, targetId, sectionOverride) {
   const label = REPORT_SECTION_LABELS[section];
   let body = '';
   if (section === 'resumen') body = buildResumenReportBody(p);
+  else if (section === 'lifestyle') body = buildLifestyleReportBody(p);
   else if (section === 'historia') body = buildHistoriaReportBody(p);
   else if (section === 'evalnut') body = buildEvalnutReportBody(p);
   else if (section === 'antro') body = buildAntroReportBody(p);
